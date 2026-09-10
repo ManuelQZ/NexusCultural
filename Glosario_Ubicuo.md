@@ -14,41 +14,50 @@ El valor cultural que aporta cada vendedor tanto por su edad ya que es centrado 
 
 
 ### [Origen]
-**Definición:** [Representa la tierra, el resguardo o el municipio de creación del producto]
+**Definición:** [Representa la tierra, el resguardo o el municipio de creación artesanal donde habita el creador y nace la pieza.]
 
 **Sinónimos aceptados:** [Territorio / Lote]
 **No usar:** [Comunidad / Ubicación]
 
+**Ejemplo en conversación:**
+"Debemos validar que cada pieza registre su Origen antes de desplegarla en la exhibición."
+
 **Ejemplo de uso en código:**
-\`\`\`java
-[una línea de código de ejemplo usando este término]
-\`\`\`
+//
+Origen origen = Origen.de("Filandia", "Quindío", "Resguardo Chami");
+//
 
 ---
 
 ### [Artesano]
-**Definición:** [Es el vendedor o creador de los productos]
+**Definición:** [Rol de usuario correspondiente al adulto mayor custodio de saberes tradicionales que elabora y gestiona las artesanías.]
 
-**Sinónimos aceptados:** [Maestro]
-**No usar:** [Vendedor]
+**Sinónimos aceptados:** [Maestro / Creador]
+**No usar:** [Vendedor / Proveedor]
 
-**Ejemplo de uso:**
-\`\`\`java
-[...]
-\`\`\`
+**Ejemplo en conversación:** 
+"El Artesano puede autenticarse mediante un código SMS de un solo uso sin necesidad de recordar contraseñas."
+
+**Ejemplo de uso en código:**
+//
+Artesano artesano = Artesano.registrar(artesanoId, "Don José", celularSMS, origen);
+//
 
 ---
 
 ### [Articulo]
-**Definición:** [Las artesanías hechas a mano osea los productos a vender]
+**Definición:** [Obra o artesanía física hecha a mano por el adulto mayor que se encuentra disponible para su preservación y adquisición.]
 
-**Sinónimos aceptados:** [Pieza]
-**No usar:** [Producto]
+**Sinónimos aceptados:** [Pieza / Obra]
+**No usar:** [Producto / Item]
+
+**Ejemplo en conversación:** 
+"Cada Articulo debe estar aprobado por un moderador antes de ponerse visible en la galería."
 
 **Ejemplo de uso en código:**
-\`\`\`java
-[una línea de código de ejemplo usando este término]
-\`\`\`
+//
+Articulo articulo = Articulo.crear(articuloId, "Sombrero Tejido", precio, historia, artesanoId);
+//
 
 ---
 
@@ -56,40 +65,55 @@ El valor cultural que aporta cada vendedor tanto por su edad ya que es centrado 
 **Definición:** [Seria la descripción narrativa del Origen (historia personal o tradicional), la Técnica Ancestral empleada y la Región de Procedencia.]
 
 **Sinónimos aceptados:** [Relato]
-**No usar:** [Descripción]
+**No usar:** [Descripción / Metadata]
+
+**Ejemplo en conversación:** 
+"El dominio no debe permitir la publicación de un artículo si su HistoriaProducto está vacía."
 
 **Ejemplo de uso en código:**
-\`\`\`java
-[una línea de código de ejemplo usando este término]
-\`\`\`
+//
+HistoriaProducto historia = HistoriaProducto.documentar(
+    "Tejido a mano con fibra de iraca heredado de tres generaciones", 
+    TecnicaAncestral.TEJEDURIA, 
+    origen
+);
+//
 
 ---
 
 ### [Reseña]
-**Definición:** [Es el medio por el cual es comprador da fe del valor de la obra y del impacto del producto.]
+**Definición:** [Valoración cualitativa y cuantitativa (1 a 5 estrellas) otorgada por quien adquirió el artículo para dar fe de su valor patrimonial.]
 
 **Sinónimos aceptados:** [Valoración / Calificación]
-**No usar:** [Comentario]
+**No usar:** [Comentario / Review]
+
+**Ejemplo en conversación:** 
+"Un usuario solo puede registrar una Reseña si existe una adquisición completada en el sistema."
 
 **Ejemplo de uso en código:**
-\`\`\`java
-[una línea de código de ejemplo usando este término]
-\`\`\`
+//
+Reseña reseña = Reseña.publicar(Calificacion.CINCO_ESTRELLAS, "Hermosa pieza y excelente relato del artesano", clienteId);
+//
 
 ---
 
 ### [Galeria]
-**Definición:** [Representa todos los productos en exposición.]
+**Definición:** [Módulo o espacio de la plataforma que expone las artesanías aprobadas para su exploración y búsqueda cultural.]
 
 **Sinónimos aceptados:** [Exhibición]
-**No usar:** [Catalogo]
+**No usar:** [Catalogo / Inventario]
+
+**Ejemplo en conversación:** 
+"La Galeria aplicará filtros predictivos por técnica ancestral y región de origen."
 
 **Ejemplo de uso en código:**
-\`\`\`java
-[una línea de código de ejemplo usando este término]
-\`\`\`
+//
+List<Articulo> galeria = galeriaRepository.obtenerArticulosAprobados(origen, tecnica);
+//
+
 
 ---
+
 
 ## Anti-patrones (Términos a EVITAR en nuestro proyecto)
 
