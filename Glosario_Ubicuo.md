@@ -111,8 +111,41 @@ Reseña reseña = Reseña.publicar(Calificacion.CINCO_ESTRELLAS, "Hermosa pieza 
 List<Articulo> galeria = galeriaRepository.obtenerArticulosAprobados(origen, tecnica);
 //
 
+---
+
+### [Grupo]
+**Definición:** [Clasificación por especialidad o técnica ancestral (como tejeduría, alfarería, cestería o talla en madera) que organiza y agrupa los artículos dentro de la galería.]
+
+**Sinónimos aceptados:** [Colección]
+**No usar:** [Categoria / Tipos]
+
+**Ejemplo en conversación:** 
+"Al momento de registrar un nuevo artículo, el artesano debe seleccionar el grupo correspondiente a su técnica tradicional."
+
+**Ejemplo de uso en código:**
+//
+Grupo grupo = Grupo.TEJEDURIA;
+List<Articulo> articulos = galeriaRepository.buscarPorGrupo(grupo);
+//
 
 ---
+
+### [Contacto]
+**Definición:** [Canal de comunicación o interacción directa que se abre entre un comprador y un Artesano para consultar detalles sobre una obra o su valor tradicional.]
+
+**Sinónimos aceptados:** [Enlace]
+**No usar:** [Chat]
+
+**Ejemplo en conversación:** 
+"El comprador puede iniciar un vinculo con el artesano antes de solicitar la adquisición."
+
+**Ejemplo de uso en código:**
+//
+Contacto contacto = Contacto.abrir(compradorId, artesanoId, articuloId);
+//
+
+---
+
 
 
 ## Anti-patrones (Términos a EVITAR en nuestro proyecto)
@@ -125,6 +158,8 @@ List<Articulo> galeria = galeriaRepository.obtenerArticulosAprobados(origen, tec
 | [Descripción] | [HistoriaProducto] |
 | [Comentario] | [Reseña] |
 | [Catalogo] | [Galeria] |
+| [Categoria] | [Grupo] |
+| [Chat] | [Contacto] |
 
 
 
@@ -136,5 +171,5 @@ List<Articulo> galeria = galeriaRepository.obtenerArticulosAprobados(origen, tec
 4. Cada producto debe tener minimo 2 imagenes expositorias del mismo. 
 5. Cada producto debe mostrar el stock en tiempo real y al terminarse debe realizarse un softdelete automatico.
 6. El costo de envio sera calculado de acuerdo al peso del producto y anexado directamente a la facturación.
-7. Se definiran roles especificos de acuerdo al tipo conj permisos establecidos para cada uno.(Un artesano no puede comprar sus propios productos, pero si podria comprar aquellos de otros artesanos).
+7. Se definiran roles especificos de acuerdo al tipo con permisos establecidos para cada uno.(Un artesano no puede comprar sus propios productos, pero si podria comprar aquellos de otros artesanos).
 
