@@ -172,4 +172,4 @@ Contacto contacto = Contacto.abrir(compradorId, artesanoId, articuloId);
 5. Cada producto debe mostrar el stock en tiempo real y al terminarse debe realizarse un softdelete automatico.
 6. El costo de envio sera calculado de acuerdo al peso y volumen del producto y anexado directamente a la facturación.
 7. Se definiran roles especificos de acuerdo al tipo con permisos establecidos para cada uno.(Un artesano no puede comprar sus propios productos, pero si podria comprar aquellos de otros artesanos).
-
+8. Se asignará la insignia "Artesano Maestro" a todo Artesano mayor de 60 años.
