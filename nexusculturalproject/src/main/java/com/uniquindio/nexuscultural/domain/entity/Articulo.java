@@ -1,6 +1,7 @@
 package com.uniquindio.nexuscultural.domain.entity;
 
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoArticulo;
+import com.uniquindio.nexuscultural.domain.valueobject.Grupo;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Articulo {
     private int Stock;
     private String descripcion;
     private EstadoArticulo estado;
+    private Grupo grupo;
     private final LocalDateTime fechaPublicacion;
 
     public void inactivar(){
