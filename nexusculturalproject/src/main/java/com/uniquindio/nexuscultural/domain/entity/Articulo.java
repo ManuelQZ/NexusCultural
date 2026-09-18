@@ -31,5 +31,8 @@ public class Articulo {
         this.estado = EstadoArticulo.INACTIVO;
     }
 
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
 }
