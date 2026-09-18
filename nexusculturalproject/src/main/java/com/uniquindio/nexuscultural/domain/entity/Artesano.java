@@ -1,27 +1,49 @@
 package com.uniquindio.nexuscultural.domain.entity;
 
-import com.uniquindio.nexuscultural.domain.valueobject.EstadoArticulo;
-import jakarta.validation.constraints.Email;
+import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
+import com.uniquindio.nexuscultural.domain.valueobject.Email;
+import com.uniquindio.nexuscultural.domain.valueobject.RolUsuario;
+import com.uniquindio.nexuscultural.domain.valueobject.TrayectoriaCultural;
+import com.uniquindio.nexuscultural.domain.valueobject.UbicacionGeografica;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@Builder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true) /*Ignora todos los campos, solo incluye los
-atributos que se marquen con .Include*/
+public class Artesano extends Usuario {
 
-public class Artesano {
+    private TrayectoriaCultural trayectoriaCultural;
+    private UbicacionGeografica ubicacionGeografica;
+    private boolean activo;
 
-    @EqualsAndHashCode.Include
-    private final UUID id; //ID único e irrepetible
+    @Builder
+    public Artesano(UUID id,
+                    String nombreCompleto,
+                    Email email,
+                    LocalDateTime fechaRegistro,
+                    TrayectoriaCultural trayectoriaCultural,
+                    UbicacionGeografica ubicacionGeografica,
+                    Boolean activo) {
+        super(id, nombreCompleto, email, RolUsuario.ARTESANO, fechaRegistro);
+        this.trayectoriaCultural = trayectoriaCultural;
+        this.ubicacionGeografica = ubicacionGeografica;
+        this.activo = activo != null ? activo : true;
+    }
 
-    private String nombreCompleto;
-    private Email email;
-    private final LocalDateTime fechaRegistro;
+    public void actualizarTrayectoria(TrayectoriaCultural nuevaTrayectoria) {
+        if (nuevaTrayectoria == null) {
+            throw new ReglaDominioException("La trayectoria cultural del artesano no puede ser nula.");
+        }
+        this.trayectoriaCultural = nuevaTrayectoria;
+    }
 
+    public void desactivarPerfil() {
+        this.activo = false;
+    }
 
+    public void activarPerfil() {
+        this.activo = true;
+    }
 }
