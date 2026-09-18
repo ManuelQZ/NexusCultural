@@ -1,6 +1,6 @@
 package com.uniquindio.nexuscultural.domain.valueobject;
 
-public enum Usuarios {
+public enum RolUsuario {
     ADMIN,
     ARTESANO,
     COMPRADOR,
