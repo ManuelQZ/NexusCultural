@@ -4,6 +4,7 @@ public enum EstadoArticulo {
 
     DISPONIBLE,
     AGOTADO,
-    INACTIVO
+    INACTIVO,
+    ELIMINADO
 
 }
