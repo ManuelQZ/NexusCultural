@@ -4,6 +4,7 @@ import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoArticulo;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoDevolucion;
 import com.uniquindio.nexuscultural.domain.valueobject.Grupo;
+import com.uniquindio.nexuscultural.domain.valueobject.Precio;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,39 +22,32 @@ public class Articulo {
     private final Grupo grupo;
     private final LocalDateTime fechaPublicacion;
     private final List<String> imagenes;    // el dominio solo conoce referencias (URLs/keys)
+
     private String titulo;
     private String descripcion;
     private int stock;
     private EstadoArticulo estado;
+    private Precio precio;
 
     private Articulo(UUID id, UUID artesanoId, String titulo, String descripcion,
-                     int stock, Grupo grupo, List<String> imagenes,
-                     LocalDateTime fechaPublicacion) {
+                     int stock, EstadoArticulo estado, Grupo grupo, List<String> imagenes,
+                     Precio precio, LocalDateTime fechaPublicacion) {
         this.id = id;
         this.artesanoId = artesanoId;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.stock = stock;
+        this.estado = estado;
         this.grupo = grupo;
         this.imagenes = new ArrayList<>(imagenes);
+        this.precio = precio;
         this.fechaPublicacion = fechaPublicacion;
-        this.estado = EstadoArticulo.DISPONIBLE;
     }
 
-    public UUID getId() { return id; }
-    public UUID getArtesanoId() { return artesanoId; }
-    public String getTitulo() { return titulo; }
-    public String getDescripcion() { return descripcion; }
-    public int getStock() { return stock; }
-    public EstadoArticulo getEstado() { return estado; }
-    public Grupo getGrupo() { return grupo; }
-    public LocalDateTime getFechaPublicacion() { return fechaPublicacion; }
-    public List<String> getImagenes() { return Collections.unmodifiableList(imagenes); }
-
-
+    /** Única puerta de entrada para crear un artículo NUEVO: aquí se validan las reglas. */
     public static Articulo crear(UUID artesanoId, String titulo, String descripcion,
                                  int stockInicial, Grupo grupo, List<String> imagenes,
-                                 LocalDateTime ahora) {
+                                 Precio precio, LocalDateTime ahora) {
         if (artesanoId == null) {
             throw new ReglaDominioException("El artículo debe pertenecer a un artesano.");
         }
@@ -63,6 +57,9 @@ public class Articulo {
         if (grupo == null) {
             throw new ReglaDominioException("El artículo debe pertenecer a un grupo.");
         }
+        if (precio == null) {
+            throw new ReglaDominioException("El artículo debe tener un precio.");
+        }
         if (stockInicial < 1) {
             throw new ReglaDominioException("Un artículo nuevo debe tener al menos 1 unidad en stock.");
         }
@@ -71,7 +68,20 @@ public class Articulo {
                     "Un artículo debe tener mínimo " + MINIMO_IMAGENES + " imágenes.");
         }
         return new Articulo(UUID.randomUUID(), artesanoId, titulo, descripcion,
-                stockInicial, grupo, imagenes, ahora);
+                stockInicial, EstadoArticulo.DISPONIBLE, grupo, imagenes, precio, ahora);
+    }
+
+    /**
+     * Reconstruye un artículo YA EXISTENTE (por ejemplo, al leerlo de la base de datos
+     * o del repositorio en memoria). No vuelve a validar las reglas de creación.
+     * Solo debe usarla infrastructure.
+     */
+    public static Articulo reconstruir(UUID id, UUID artesanoId, String titulo, String descripcion,
+                                       int stock, EstadoArticulo estado, Grupo grupo,
+                                       List<String> imagenes, Precio precio,
+                                       LocalDateTime fechaPublicacion) {
+        return new Articulo(id, artesanoId, titulo, descripcion, stock, estado,
+                grupo, imagenes, precio, fechaPublicacion);
     }
 
     /** Se llama al confirmar un pedido. Si llega a 0 el artículo queda AGOTADO. */
@@ -99,29 +109,56 @@ public class Articulo {
             throw new ReglaDominioException("No se puede reponer stock de un artículo eliminado.");
         }
         stock += cantidad;
+        // Reponer stock no reactiva un artículo que el artesano sacó de venta a propósito.
         if (estado == EstadoArticulo.AGOTADO) {
             estado = EstadoArticulo.DISPONIBLE;
         }
+    }
+
+    /** El artesano lo saca de venta temporalmente. A diferencia de eliminar(), es reversible. */
+    public void inactivar() {
+        if (estado == EstadoArticulo.ELIMINADO) {
+            throw new ReglaDominioException("No se puede inactivar un artículo ya eliminado.");
+        }
+        if (estado == EstadoArticulo.INACTIVO) {
+            throw new ReglaDominioException("El artículo ya está inactivo.");
+        }
+        estado = EstadoArticulo.INACTIVO;
+    }
+
+    /** Vuelve a poner el artículo en venta. Su disponibilidad depende del stock que tenga. */
+    public void reactivar() {
+        if (estado != EstadoArticulo.INACTIVO) {
+            throw new ReglaDominioException("Solo se puede reactivar un artículo inactivo.");
+        }
+        estado = (stock > 0) ? EstadoArticulo.DISPONIBLE : EstadoArticulo.AGOTADO;
     }
 
     /**
      * Soft delete. El dominio no consulta pedidos (no conoce la BD):
      * el caso de uso averigua si hay pedidos activos y se lo informa aquí.
      */
-    public void eliminar(boolean sujetoADevolucion) {
+    public void eliminar(boolean tienePedidosActivosOSujetosADevolucion) {
         if (estado == EstadoArticulo.ELIMINADO) {
             throw new ReglaDominioException("El artículo ya fue eliminado.");
         }
-        if (sujetoADevolucion) {
+        if (tienePedidosActivosOSujetosADevolucion) {
             throw new ReglaDominioException(
                     "No se puede eliminar un artículo con pedidos activos o sujetos a devolución.");
         }
         estado = EstadoArticulo.ELIMINADO;
     }
 
-    public void inactivar(){
-        estado = EstadoArticulo.INACTIVO;
-    }
+    public UUID getId() { return id; }
+    public UUID getArtesanoId() { return artesanoId; }
+    public String getTitulo() { return titulo; }
+    public String getDescripcion() { return descripcion; }
+    public int getStock() { return stock; }
+    public EstadoArticulo getEstado() { return estado; }
+    public Grupo getGrupo() { return grupo; }
+    public Precio getPrecio() { return precio; }
+    public LocalDateTime getFechaPublicacion() { return fechaPublicacion; }
+    public List<String> getImagenes() { return Collections.unmodifiableList(imagenes); }
 
     @Override
     public boolean equals(Object o) {
