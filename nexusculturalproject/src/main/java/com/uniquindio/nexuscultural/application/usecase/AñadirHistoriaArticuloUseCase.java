@@ -43,7 +43,7 @@ public class AñadirHistoriaArticuloUseCase {
         }
 
         // Añadir la historia al artículo
-        articulo.setDescripcion(historia);
+        articulo.actualizarDescripcion(historia);
 
         // Guardar el artículo actualizado
         return articuloRepository.guardar(articulo);

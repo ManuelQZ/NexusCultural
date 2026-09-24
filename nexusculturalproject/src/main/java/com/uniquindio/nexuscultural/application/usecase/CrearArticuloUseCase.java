@@ -6,6 +6,7 @@ import com.uniquindio.nexuscultural.domain.valueobject.Grupo;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class CrearArticuloUseCase {
@@ -33,15 +34,16 @@ public class CrearArticuloUseCase {
         }
 
         // Crear el artículo con la historia/descripción
-        Articulo articulo = Articulo.builder()
-                .id(UUID.randomUUID())
-                .titulo(titulo)
-                .Stock(stock)
-                .descripcion(descripcion)
-                .estado(EstadoArticulo.DISPONIBLE)
-                .grupo(grupo)
-                .fechaPublicacion(LocalDateTime.now())
-                .build();
+        Articulo articulo = Articulo.crear(
+                artesanoId,
+                titulo,
+                descripcion,
+                stock,
+                grupo,
+                List.of(), // Lista vacía para evitar NullPointerException (Temporal)
+                null,      // Precio temporal
+                LocalDateTime.now()
+        );
 
         // Guardar el artículo
         return articuloRepository.guardar(articulo);
