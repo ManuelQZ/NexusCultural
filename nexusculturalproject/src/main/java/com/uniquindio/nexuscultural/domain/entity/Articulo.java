@@ -171,4 +171,12 @@ public class Articulo {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+
+    public void actualizarDescripcion(String nuevaDescripcion) {
+        if (nuevaDescripcion == null || nuevaDescripcion.isBlank()) {
+            throw new ReglaDominioException("La descripción de la historia no puede estar vacía");
+        }
+        this.descripcion = nuevaDescripcion;
+    }
 }
