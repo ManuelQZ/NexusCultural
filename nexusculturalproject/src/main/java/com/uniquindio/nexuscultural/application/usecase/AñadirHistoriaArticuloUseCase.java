@@ -2,6 +2,7 @@ package com.uniquindio.nexuscultural.application.usecase;
 
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
+import com.uniquindio.nexuscultural.domain.repository.ArticuloRepository;
 
 import java.util.UUID;
 

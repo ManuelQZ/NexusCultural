@@ -2,6 +2,7 @@ package com.uniquindio.nexuscultural.application.usecase;
 
 import com.uniquindio.nexuscultural.domain.entity.Artesano;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
+import com.uniquindio.nexuscultural.domain.repository.ArtesanoRepository;
 import com.uniquindio.nexuscultural.domain.valueobject.Email;
 import com.uniquindio.nexuscultural.domain.valueobject.TrayectoriaCultural;
 import com.uniquindio.nexuscultural.domain.valueobject.UbicacionGeografica;

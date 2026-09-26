@@ -1,11 +1,8 @@
 package com.uniquindio.nexuscultural.application.usecase;
 
-import com.uniquindio.nexuscultural.application.dto.ProcesarPagoRequest;
+import com.uniquindio.nexuscultural.application.dto.request.ProcesarPagoRequest;
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.repository.PedidoRepository;
-
-import java.math.BigDecimal;
-import java.util.UUID;
 
 public class ProcesarPagoPedidoUseCase {
 
