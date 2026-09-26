@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.application.dto;
+package com.uniquindio.nexuscultural.application.dto.request;
 
 import java.math.BigDecimal;
 import java.util.UUID;

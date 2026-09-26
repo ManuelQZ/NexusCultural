@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.application.usecase;
+package com.uniquindio.nexuscultural.domain.repository;
 
 import com.uniquindio.nexuscultural.domain.entity.Artesano;
 import com.uniquindio.nexuscultural.domain.valueobject.Email;
