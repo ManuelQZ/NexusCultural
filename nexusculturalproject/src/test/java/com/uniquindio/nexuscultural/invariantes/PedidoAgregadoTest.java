@@ -1,7 +1,9 @@
 package com.uniquindio.nexuscultural.invariantes;
 
+import com.uniquindio.nexuscultural.domain.entity.Devolucion;
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
+import com.uniquindio.nexuscultural.domain.valueobject.EstadoDevolucion;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoPedido;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,85 +18,103 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PedidoAgregadoTest {
 
+    private final UUID compradorId = UUID.randomUUID();
+    private final UUID articuloId = UUID.randomUUID();
+
+    /** Lleva un pedido hasta ENTREGADO usando el flujo público real, sin reflexión. */
+    private Pedido pedidoEntregado(LocalDateTime fechaEntrega) {
+        Pedido pedido = Pedido.crear(compradorId, articuloId, 1, LocalDateTime.now());
+        pedido.confirmar();
+        pedido.enviar();
+        pedido.marcarEntregado(fechaEntrega);
+        return pedido;
+    }
+
     @Test
     @DisplayName("Pedido PENDIENTE no permite devolución")
     void testInvariantePedidoPendiente() {
-        UUID compradorId = UUID.randomUUID();
-        UUID articuloId = UUID.randomUUID();
+        // Arrange
         LocalDateTime ahora = LocalDateTime.now();
-
         Pedido pedido = Pedido.crear(compradorId, articuloId, 1, ahora);
         EstadoPedido estadoOriginal = pedido.getEstado();
 
-        assertThrows(ReglaDominioException.class, () -> {
-            pedido.solicitarDevolucion(compradorId, "Producto defectuoso", ahora);
-        });
-
+        // Act & Assert
+        assertThrows(ReglaDominioException.class,
+                () -> pedido.solicitarDevolucion(compradorId, "Producto defectuoso", ahora));
         assertEquals(estadoOriginal, pedido.getEstado());
     }
 
     @Test
     @DisplayName("Solo el comprador puede solicitar devolución")
-    void testInvarianteAutorizacionDevolucion() throws Exception {
-        UUID compradorId = UUID.randomUUID();
-        UUID articuloId = UUID.randomUUID();
+    void testInvarianteAutorizacionDevolucion() {
+        // Arrange
+        LocalDateTime fechaEntrega = LocalDateTime.now().minusDays(1);
+        Pedido pedido = pedidoEntregado(fechaEntrega);
         UUID otroUsuarioId = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
-
-        Pedido pedido = Pedido.crear(compradorId, articuloId, 1, ahora);
-        
-        Field estadoField = Pedido.class.getDeclaredField("estado");
-        estadoField.setAccessible(true);
-        estadoField.set(pedido, EstadoPedido.ENTREGADO);
-        
-        Field fechaEntregaField = Pedido.class.getDeclaredField("fechaEntrega");
-        fechaEntregaField.setAccessible(true);
-        fechaEntregaField.set(pedido, ahora.minusDays(1));
-
         EstadoPedido estadoOriginal = pedido.getEstado();
 
-        assertThrows(ReglaDominioException.class, () -> {
-            pedido.solicitarDevolucion(otroUsuarioId, "Producto defectuoso", ahora);
-        });
-
+        // Act & Assert
+        assertThrows(ReglaDominioException.class,
+                () -> pedido.solicitarDevolucion(otroUsuarioId, "Producto defectuoso", LocalDateTime.now()));
         assertEquals(estadoOriginal, pedido.getEstado());
     }
 
     @Test
     @DisplayName("No permite devolución fuera del plazo")
-    void testInvariantePlazoDevolucion() throws Exception {
-        UUID compradorId = UUID.randomUUID();
-        UUID articuloId = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
-
-        Pedido pedido = Pedido.crear(compradorId, articuloId, 1, ahora);
-        
-        Field estadoField = Pedido.class.getDeclaredField("estado");
-        estadoField.setAccessible(true);
-        estadoField.set(pedido, EstadoPedido.ENTREGADO);
-        
-        Field fechaEntregaField = Pedido.class.getDeclaredField("fechaEntrega");
-        fechaEntregaField.setAccessible(true);
-        fechaEntregaField.set(pedido, ahora.minusDays(10));
-
+    void testInvariantePlazoDevolucion() {
+        // Arrange: entregado hace 10 días, el plazo es de 8
+        LocalDateTime fechaEntrega = LocalDateTime.now().minusDays(10);
+        Pedido pedido = pedidoEntregado(fechaEntrega);
         EstadoPedido estadoOriginal = pedido.getEstado();
 
-        assertThrows(ReglaDominioException.class, () -> {
-            pedido.solicitarDevolucion(compradorId, "Producto defectuoso", ahora);
-        });
-
+        // Act & Assert
+        assertThrows(ReglaDominioException.class,
+                () -> pedido.solicitarDevolucion(compradorId, "Producto defectuoso", LocalDateTime.now()));
         assertEquals(estadoOriginal, pedido.getEstado());
     }
 
     @Test
     @DisplayName("No permite crear pedido con cantidad inválida")
     void testInvarianteCreacionPedido() {
-        UUID compradorId = UUID.randomUUID();
-        UUID articuloId = UUID.randomUUID();
+        // Arrange
         LocalDateTime ahora = LocalDateTime.now();
 
-        assertThrows(ReglaDominioException.class, () -> {
-            Pedido.crear(compradorId, articuloId, 0, ahora);
-        });
+        // Act & Assert
+        assertThrows(ReglaDominioException.class,
+                () -> Pedido.crear(compradorId, articuloId, 0, ahora));
+    }
+
+    @Test
+    @DisplayName("No permite una segunda devolución mientras la primera está en proceso")
+    void testInvarianteUnaSolaDevolucionActiva() {
+        // Arrange
+        LocalDateTime ahora = LocalDateTime.now();
+        Pedido pedido = pedidoEntregado(ahora);
+        Devolucion primera = pedido.solicitarDevolucion(compradorId, "No me gustó", ahora.plusDays(1));
+
+        // Act & Assert
+        assertThrows(ReglaDominioException.class,
+                () -> pedido.solicitarDevolucion(compradorId, "Cambié de opinión", ahora.plusDays(2)));
+        assertEquals(EstadoPedido.EN_DEVOLUCION, pedido.getEstado());
+        assertEquals(primera, pedido.getDevolucion());
+    }
+
+    @Test
+    @DisplayName("Al rechazar la devolución, el pedido vuelve a ENTREGADO")
+    void testInvarianteConsistenciaAlResolverDevolucion() {
+        // Arrange
+        LocalDateTime ahora = LocalDateTime.now();
+        Pedido pedido = pedidoEntregado(ahora);
+        pedido.solicitarDevolucion(compradorId, "No era lo que esperaba", ahora.plusDays(1));
+
+        // Act
+        pedido.resolverDevolucion(false);
+
+        // Assert: Pedido y Devolucion quedan consistentes entre sí
+        assertEquals(EstadoPedido.ENTREGADO, pedido.getEstado());
+        assertEquals(EstadoDevolucion.RECHAZADO, pedido.getDevolucion().getEstado());
     }
 }
+
+
+

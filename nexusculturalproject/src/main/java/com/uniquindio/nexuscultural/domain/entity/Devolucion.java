@@ -2,11 +2,13 @@ package com.uniquindio.nexuscultural.domain.entity;
 
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoDevolucion;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 public class Devolucion {
 
     private final UUID id;

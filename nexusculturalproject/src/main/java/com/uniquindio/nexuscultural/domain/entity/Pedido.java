@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class Pedido {
 
-    private static final int PLAZO_DEVOLUCION_DIAS = 8; //A discutir con el grupo
+    private static final int PLAZO_DEVOLUCION_DIAS = 8; // A discutir con el grupo
 
     private final UUID id;
     private final UUID compradorId;
@@ -19,6 +19,8 @@ public class Pedido {
 
     private EstadoPedido estado;
     private LocalDateTime fechaEntrega;
+    private Devolucion devolucion; /*Solo existe para que no el pedido tenga una instancia de devolución
+    en caso de que no se haga, siempre será null*/
 
     private Pedido(UUID id, UUID compradorId, UUID articuloId, int cantidad,
                    LocalDateTime fechaCreacion) {
@@ -28,7 +30,6 @@ public class Pedido {
         this.cantidad = cantidad;
         this.fechaCreacion = fechaCreacion;
         this.estado = EstadoPedido.PENDIENTE;
-
     }
 
     public static Pedido crear(UUID compradorId, UUID articuloId, int cantidad,
@@ -42,52 +43,66 @@ public class Pedido {
         return new Pedido(UUID.randomUUID(), compradorId, articuloId, cantidad, ahora);
     }
 
-
-
-    private void verificarEstado(EstadoPedido estadoEsperado){
-        if(estado != estadoEsperado){
-            throw new ReglaDominioException("No fue posible proceder, el sistema necesita que el pedido esté en estado" + estadoEsperado+ " y actualmente se encuentra en estado " + estado);
-        }
-    }
-
-    private void confirmarPedido (){
+    public void confirmar() {
         verificarEstado(EstadoPedido.PENDIENTE);
         estado = EstadoPedido.CONFIRMADO;
     }
 
-    private void enviarPedido(){
-        verificarEstado(EstadoPedido.PENDIENTE);
+    public void enviar() {
+        verificarEstado(EstadoPedido.CONFIRMADO);
         estado = EstadoPedido.EN_CAMINO;
-
     }
 
-    private void marcarEntregado(){
+    public void marcarEntregado(LocalDateTime ahora) {
         verificarEstado(EstadoPedido.EN_CAMINO);
         estado = EstadoPedido.ENTREGADO;
-        fechaEntrega = LocalDateTime.now();
+        fechaEntrega = ahora;
     }
 
+    /**
+     * Invariante 1 del agregado: un pedido no puede tener más de una
+     * devolución activa al mismo tiempo.
+     */
     public Devolucion solicitarDevolucion(UUID solicitanteId, String motivo, LocalDateTime ahora) {
         if (!compradorId.equals(solicitanteId)) {
-            throw new ReglaDominioException(
-                    "Solo el comprador del pedido puede solicitar la devolución.");
+            throw new ReglaDominioException("Solo el comprador del pedido puede solicitar la devolución.");
         }
         if (estado != EstadoPedido.ENTREGADO) {
-            throw new ReglaDominioException(
-                    "Solo se puede solicitar la devolución de un pedido entregado.");
+            throw new ReglaDominioException("Solo se puede solicitar la devolución de un pedido entregado.");
+        }
+        if (devolucion != null) {
+            throw new ReglaDominioException("Este pedido ya tiene una devolución en proceso.");
         }
         if (ahora.isAfter(fechaEntrega.plusDays(PLAZO_DEVOLUCION_DIAS))) {
-            throw new ReglaDominioException(
-                    "El plazo de devolución (" + PLAZO_DEVOLUCION_DIAS + " días) ya venció.");
+            throw new ReglaDominioException("El plazo de devolución (" + PLAZO_DEVOLUCION_DIAS + " días) ya venció.");
         }
+        devolucion = Devolucion.crear(id, motivo, ahora);
         estado = EstadoPedido.EN_DEVOLUCION;
-        return Devolucion.crear(id, motivo, ahora);
+        return devolucion;
     }
 
-    private void exigirEstado(EstadoPedido esperado) {
-        if (estado != esperado) {
-            throw new ReglaDominioException(
-                    "Transición inválida: el pedido está " + estado + " y debía estar " + esperado + ".");
+    /**
+     * Invariante 2 del agregado: la Devolucion nunca se resuelve directamente;
+     * siempre a través de la raíz, para que el estado del Pedido quede consistente
+     * con el de su Devolucion.
+     */
+    public void resolverDevolucion(boolean aprobar) {
+        if (devolucion == null) {
+            throw new ReglaDominioException("Este pedido no tiene una devolución en proceso.");
+        }
+        if (aprobar) {
+            devolucion.aprobar();
+            estado = EstadoPedido.DEVUELTO;
+        } else {
+            devolucion.rechazar();
+            estado = EstadoPedido.ENTREGADO; // vuelve al estado anterior a la solicitud
+        }
+    }
+
+    private void verificarEstado(EstadoPedido estadoEsperado) {
+        if (estado != estadoEsperado) {
+            throw new ReglaDominioException("No fue posible proceder, el sistema necesita que el pedido esté en estado "
+                    + estadoEsperado + " y actualmente se encuentra en estado " + estado + ".");
         }
     }
 
@@ -98,6 +113,7 @@ public class Pedido {
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public LocalDateTime getFechaEntrega() { return fechaEntrega; }
     public EstadoPedido getEstado() { return estado; }
+    public Devolucion getDevolucion() { return devolucion; }
 
     @Override
     public boolean equals(Object o) {
