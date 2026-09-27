@@ -1,4 +1,4 @@
-#Mapeo Dominio -> API - Articulo
+# Mapeo Dominio -> API - Articulo
 
 |Operación del dominio | Método HTTP | Endpoint |
 |---|---|---|
@@ -10,7 +10,7 @@
 |eliminar(tienePedidos)|DELETE|/articulos/{id}|
 
 
-#Mapeo Dominio -> API - Devolución
+# Mapeo Dominio -> API - Devolución
 
 |Operación del dominio | Método HTTP | Endpoint |
 |---|---|---|
@@ -19,4 +19,14 @@
 |Devolucion.aprobar()|PUT|/devoluciones/{id}/aprobar|
 |Devolucion.rechazar()|PUT|/devoluciones/{id}/rechazar|
 
+
+# Mapeo Dominio -> API - Usuarios
+
+|Operación del dominio | Método HTTP | Endpoint |
+|---|---|---|
+|Artesano.registrar(...)|POST|/artesanos|
+|Consultar ficha del artesano|GET|/artesanos/{id}|
+|actualizarTrayectoria(...)|PUT|/artesanos/{id}/trayectoria|
+|Comprador.registrar(...)|POST|/compradores|
+|Administrador.registrar(...)|POST|/administradores|
 
