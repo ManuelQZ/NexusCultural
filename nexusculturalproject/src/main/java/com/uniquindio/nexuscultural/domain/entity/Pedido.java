@@ -2,11 +2,15 @@ package com.uniquindio.nexuscultural.domain.entity;
 
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoPedido;
+import com.uniquindio.nexuscultural.domain.valueobject.Precio;
+import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 public class Pedido {
 
     private static final int PLAZO_DEVOLUCION_DIAS = 8; // A discutir con el grupo
@@ -15,37 +19,70 @@ public class Pedido {
     private final UUID compradorId;
     private final UUID articuloId;
     private final int cantidad;
+    private final Precio total;
     private final LocalDateTime fechaCreacion;
 
     private EstadoPedido estado;
     private LocalDateTime fechaEntrega;
+    private String metodoPago;
+    private String referenciaTransaccion;
     private Devolucion devolucion; /*Solo existe para que no el pedido tenga una instancia de devolución
     en caso de que no se haga, siempre será null*/
 
     private Pedido(UUID id, UUID compradorId, UUID articuloId, int cantidad,
-                   LocalDateTime fechaCreacion) {
+                   Precio total, LocalDateTime fechaCreacion) {
         this.id = id;
         this.compradorId = compradorId;
         this.articuloId = articuloId;
         this.cantidad = cantidad;
+        this.total = total;
         this.fechaCreacion = fechaCreacion;
         this.estado = EstadoPedido.PENDIENTE;
     }
 
     public static Pedido crear(UUID compradorId, UUID articuloId, int cantidad,
-                               LocalDateTime ahora) {
+                               Precio precioUnitario, LocalDateTime ahora) {
         if (compradorId == null || articuloId == null) {
             throw new ReglaDominioException("El pedido necesita comprador y artículo.");
         }
         if (cantidad <= 0) {
             throw new ReglaDominioException("La cantidad debe ser mayor a cero.");
         }
-        return new Pedido(UUID.randomUUID(), compradorId, articuloId, cantidad, ahora);
+        if (precioUnitario == null) {
+            throw new ReglaDominioException("El pedido necesita el precio del artículo.");
+        }
+        Precio total = new Precio(
+                precioUnitario.monto().multiply(BigDecimal.valueOf(cantidad)),
+                precioUnitario.moneda());
+        return new Pedido(UUID.randomUUID(), compradorId, articuloId, cantidad, total, ahora);
     }
 
     public void confirmar() {
         verificarEstado(EstadoPedido.PENDIENTE);
         estado = EstadoPedido.CONFIRMADO;
+    }
+
+    /**
+     * Registra el pago de un pedido pendiente. Todas las validaciones ocurren
+     * antes de modificar nada, así un pago rechazado no deja el pedido a medias.
+     */
+    public void procesarPago(Precio monto, String metodoPago, String referenciaTransaccion) {
+        verificarEstado(EstadoPedido.PENDIENTE);
+        // compareTo y no equals: BigDecimal distingue 30000 de 30000.00 con equals
+        if (monto == null
+                || !monto.moneda().equals(total.moneda())
+                || monto.monto().compareTo(total.monto()) != 0) {
+            throw new ReglaDominioException("El monto del pago no coincide con el total del pedido.");
+        }
+        if (metodoPago == null || metodoPago.isBlank()) {
+            throw new ReglaDominioException("El método de pago es obligatorio.");
+        }
+        if (referenciaTransaccion == null || referenciaTransaccion.isBlank()) {
+            throw new ReglaDominioException("La referencia de transacción es obligatoria.");
+        }
+        this.metodoPago = metodoPago;
+        this.referenciaTransaccion = referenciaTransaccion;
+        this.estado = EstadoPedido.CONFIRMADO;
     }
 
     public void enviar() {
@@ -110,9 +147,12 @@ public class Pedido {
     public UUID getCompradorId() { return compradorId; }
     public UUID getArticuloId() { return articuloId; }
     public int getCantidad() { return cantidad; }
+    public Precio getTotal() { return total; }
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public LocalDateTime getFechaEntrega() { return fechaEntrega; }
     public EstadoPedido getEstado() { return estado; }
+    public String getMetodoPago() { return metodoPago; }
+    public String getReferenciaTransaccion() { return referenciaTransaccion; }
     public Devolucion getDevolucion() { return devolucion; }
 
     @Override
@@ -126,12 +166,6 @@ public class Pedido {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-
-
-
-
-
 
 
 }

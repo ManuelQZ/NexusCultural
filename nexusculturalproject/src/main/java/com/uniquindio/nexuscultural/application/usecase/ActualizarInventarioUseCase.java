@@ -33,7 +33,7 @@ public class ActualizarInventarioUseCase {
         }
 
         // 5. Delegar la regla de negocio al Agregado (Domain Rule)
-        articulo.actualizarStock(request.cantidad(), request.motivo());
+        articulo.actualizarInventario(request.idArtesano(), request.cantidad(), request.motivo());
 
         // 6. Persistir el estado actualizado en el repositorio
         articuloRepository.guardar(articulo);

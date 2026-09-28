@@ -149,6 +149,31 @@ public class Articulo {
         estado = EstadoArticulo.ELIMINADO;
     }
 
+    /**
+     * Ajuste de inventario (ej. conteo físico, corrección de stock). A diferencia de
+     * reducirStock/reponerStock (que mueven el stock en delta al vender/reponer),
+     * este método fija la cantidad EXACTA y exige un motivo para trazabilidad.
+     */
+    public void actualizarInventario(UUID solicitanteId, int nuevaCantidad, String motivo) {
+        if (!artesanoId.equals(solicitanteId)) {
+            throw new ReglaDominioException("Solo el artesano dueño del artículo puede actualizar su inventario.");
+        }
+        if (estado == EstadoArticulo.ELIMINADO) {
+            throw new ReglaDominioException("No se puede actualizar el inventario de un artículo eliminado.");
+        }
+        if (nuevaCantidad < 0) {
+            throw new ReglaDominioException("La cantidad no puede ser negativa.");
+        }
+        if (motivo == null || motivo.isBlank()) {
+            throw new ReglaDominioException("El motivo de la actualización de inventario es obligatorio.");
+        }
+        this.stock = nuevaCantidad;
+        // No reactiva un artículo que el artesano puso INACTIVO a propósito.
+        if (estado != EstadoArticulo.INACTIVO) {
+            estado = (nuevaCantidad > 0) ? EstadoArticulo.DISPONIBLE : EstadoArticulo.AGOTADO;
+        }
+    }
+
     public UUID getId() { return id; }
     public UUID getArtesanoId() { return artesanoId; }
     public String getTitulo() { return titulo; }
@@ -160,6 +185,13 @@ public class Articulo {
     public LocalDateTime getFechaPublicacion() { return fechaPublicacion; }
     public List<String> getImagenes() { return Collections.unmodifiableList(imagenes); }
 
+    public void actualizarDescripcion(String nuevaDescripcion) {
+        if (nuevaDescripcion == null || nuevaDescripcion.isBlank()) {
+            throw new ReglaDominioException("La descripción no puede estar vacía.");
+        }
+        this.descripcion = nuevaDescripcion;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -170,13 +202,5 @@ public class Articulo {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-
-    public void actualizarDescripcion(String nuevaDescripcion) {
-        if (nuevaDescripcion == null || nuevaDescripcion.isBlank()) {
-            throw new ReglaDominioException("La descripción de la historia no puede estar vacía");
-        }
-        this.descripcion = nuevaDescripcion;
     }
 }

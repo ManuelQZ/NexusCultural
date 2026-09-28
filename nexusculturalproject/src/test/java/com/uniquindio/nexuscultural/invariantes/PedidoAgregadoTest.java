@@ -5,11 +5,13 @@ import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoDevolucion;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoPedido;
+import com.uniquindio.nexuscultural.domain.valueobject.Precio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,10 +22,11 @@ class PedidoAgregadoTest {
 
     private final UUID compradorId = UUID.randomUUID();
     private final UUID articuloId = UUID.randomUUID();
+    private final Precio precioUnitario = new Precio(new BigDecimal("30000"), "COP");
 
     /** Lleva un pedido hasta ENTREGADO usando el flujo público real, sin reflexión. */
     private Pedido pedidoEntregado(LocalDateTime fechaEntrega) {
-        Pedido pedido = Pedido.crear(compradorId, articuloId, 1, LocalDateTime.now());
+        Pedido pedido = Pedido.crear(compradorId, articuloId, 1, precioUnitario, LocalDateTime.now());
         pedido.confirmar();
         pedido.enviar();
         pedido.marcarEntregado(fechaEntrega);
@@ -35,7 +38,7 @@ class PedidoAgregadoTest {
     void testInvariantePedidoPendiente() {
         // Arrange
         LocalDateTime ahora = LocalDateTime.now();
-        Pedido pedido = Pedido.crear(compradorId, articuloId, 1, ahora);
+        Pedido pedido = Pedido.crear(compradorId, articuloId, 1, precioUnitario, ahora);
         EstadoPedido estadoOriginal = pedido.getEstado();
 
         // Act & Assert
@@ -81,7 +84,7 @@ class PedidoAgregadoTest {
 
         // Act & Assert
         assertThrows(ReglaDominioException.class,
-                () -> Pedido.crear(compradorId, articuloId, 0, ahora));
+                () -> Pedido.crear(compradorId, articuloId, 0, precioUnitario, ahora));
     }
 
     @Test

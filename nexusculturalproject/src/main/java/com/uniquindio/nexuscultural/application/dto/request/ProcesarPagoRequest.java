@@ -1,5 +1,7 @@
 package com.uniquindio.nexuscultural.application.dto.request;
 
+import com.uniquindio.nexuscultural.domain.valueobject.Precio;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -7,7 +9,7 @@ import java.util.UUID;
 public record ProcesarPagoRequest(
         UUID idPedido,
         UUID idComprador,
-        BigDecimal monto,
+        Precio monto,
         String metodoPago,
         String referenciaTransaccion
 ) {}

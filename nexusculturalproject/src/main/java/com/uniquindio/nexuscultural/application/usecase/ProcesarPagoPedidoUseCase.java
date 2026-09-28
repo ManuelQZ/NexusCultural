@@ -22,25 +22,10 @@ public class ProcesarPagoPedidoUseCase {
             throw new IllegalStateException("Solo el comprador original puede procesar el pago de este pedido.");
         }
 
-        // 3. Validar que el monto del pago coincida con el total del pedido
-        if (request.monto().compareTo(pedido.getTotal()) != 0) {
-            throw new IllegalStateException("El monto del pago no coincide con el total del pedido.");
-        }
-
-        // 4. Validar que el método de pago sea válido
-        if (request.metodoPago() == null || request.metodoPago().trim().isEmpty()) {
-            throw new IllegalArgumentException("El método de pago es obligatorio.");
-        }
-
-        // 5. Validar que la referencia de transacción sea única y no nula
-        if (request.referenciaTransaccion() == null || request.referenciaTransaccion().trim().isEmpty()) {
-            throw new IllegalArgumentException("La referencia de transacción es obligatoria.");
-        }
-
-        // 6. Delegar la regla de negocio al Agregado (Domain Rule)
+        // 3. Delegar al agregado: valida monto, método de pago y referencia
         pedido.procesarPago(request.monto(), request.metodoPago(), request.referenciaTransaccion());
 
-        // 7. Persistir el estado actualizado en el repositorio
+        // 4. Persistir el estado actualizado en el repositorio
         pedidoRepository.guardar(pedido);
     }
 }
