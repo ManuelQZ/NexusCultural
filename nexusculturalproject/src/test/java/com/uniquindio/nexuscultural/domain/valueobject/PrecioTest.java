@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.valueobject;
+package com.uniquindio.nexuscultural.domain.valueobject;
 
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
 import com.uniquindio.nexuscultural.domain.valueobject.Precio;

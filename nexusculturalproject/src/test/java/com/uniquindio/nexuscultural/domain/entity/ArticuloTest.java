@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.entity;
+package com.uniquindio.nexuscultural.domain.entity;
 
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;

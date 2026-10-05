@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.invariantes;
+package com.uniquindio.nexuscultural.domain.invariantes;
 
 import com.uniquindio.nexuscultural.domain.entity.Devolucion;
 import com.uniquindio.nexuscultural.domain.entity.Pedido;

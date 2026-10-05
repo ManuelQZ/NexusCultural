@@ -18,21 +18,6 @@ public class CrearArticuloUseCase {
     }
 
     public Articulo ejecutar(UUID artesanoId, String titulo, int stock, String descripcion, Grupo grupo) {
-        // Validar que la descripción no sea nula o vacía
-        if (descripcion == null || descripcion.trim().isEmpty()) {
-            throw new ReglaDominioException("La descripción del artículo es obligatoria");
-        }
-
-        // Validar que el título no sea nulo o vacío
-        if (titulo == null || titulo.trim().isEmpty()) {
-            throw new ReglaDominioException("El título del artículo es obligatorio");
-        }
-
-        // Validar que el stock sea positivo
-        if (stock <= 0) {
-            throw new ReglaDominioException("El stock debe ser mayor a cero");
-        }
-
         // Crear el artículo con la historia/descripción
         Articulo articulo = Articulo.crear(
                 artesanoId,

@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.entity;
+package com.uniquindio.nexuscultural.domain.entity;
 
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.valueobject.Precio;
