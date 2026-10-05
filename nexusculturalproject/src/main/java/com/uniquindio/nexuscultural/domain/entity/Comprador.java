@@ -22,7 +22,7 @@ public class Comprador extends Usuario {
     private UbicacionGeografica direccionEntrega;
 
     @Builder
-    public Comprador(UUID id,
+    private Comprador(UUID id,
                      String nombreCompleto,
                      Email email,
                      LocalDateTime fechaRegistro, List<UUID> favoritos,

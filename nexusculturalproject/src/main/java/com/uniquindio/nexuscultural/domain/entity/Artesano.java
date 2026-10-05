@@ -19,7 +19,7 @@ public class Artesano extends Usuario {
     private boolean activo;
 
     @Builder
-    public Artesano(UUID id,
+    private Artesano(UUID id,
                     String nombreCompleto,
                     Email email,
                     LocalDateTime fechaRegistro,

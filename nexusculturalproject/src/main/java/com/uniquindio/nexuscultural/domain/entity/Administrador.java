@@ -14,7 +14,7 @@ public class Administrador extends Usuario {
     private String nivelAcceso;
 
     @Builder
-    public Administrador(UUID id,
+    private Administrador(UUID id,
                          String nombreCompleto,
                          Email email,
                          LocalDateTime fechaRegistro,

@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.application.usecases;
+package com.uniquindio.nexuscultural.application.usecase;
 
 import com.uniquindio.nexuscultural.domain.entity.Devolucion;
 
