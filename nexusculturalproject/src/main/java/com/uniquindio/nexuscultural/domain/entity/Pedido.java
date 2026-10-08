@@ -40,7 +40,7 @@ public class Pedido {
         this.estado = EstadoPedido.PENDIENTE;
     }
 
-    public static Pedido crear(UUID compradorId, UUID articuloId, int cantidad,
+    public static Pedido crGlobalExceptionHandlerGlobalExceptionHandlerear(UUID compradorId, UUID articuloId, int cantidad,
                                Precio precioUnitario, LocalDateTime ahora) {
         if (compradorId == null || articuloId == null) {
             throw new ReglaDominioException("El pedido necesita comprador y artículo.");

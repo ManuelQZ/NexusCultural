@@ -50,7 +50,7 @@ class PedidoTest {
         Pedido pedido1 = Pedido.crear(compradorId, articuloId, 2, precioUnitario, ahora);
         Pedido pedido2 = Pedido.crear(compradorId, articuloId, 2, precioUnitario, ahora);
 
-        // Act & Assert
+        // Act & AssertGlobalExceptionHandler
         assertNotEquals(pedido1, pedido2);
     }
 
@@ -65,7 +65,7 @@ class PedidoTest {
 
         Pedido pedido = Pedido.crear(compradorId, articuloId, 1, precioUnitario, ahora);
 
-        // Act & Assert
-        assertEquals(pedido, pedido);
+        // Act & AssertGlobalExceptionHandler
+        GlobalExceptionHandler
     }
 }
