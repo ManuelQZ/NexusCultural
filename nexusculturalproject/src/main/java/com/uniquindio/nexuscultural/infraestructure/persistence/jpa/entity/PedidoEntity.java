@@ -47,10 +47,6 @@ public class PedidoEntity {
     @Column(name = "referencia_transaccion")
     private String referenciaTransaccion;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "devolucion_id")
-    private DevolucionEntity devolucion;
-
     @Version
     private Long version;
 }
