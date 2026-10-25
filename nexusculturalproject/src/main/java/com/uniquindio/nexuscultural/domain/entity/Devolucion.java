@@ -27,10 +27,10 @@ public class Devolucion {
     }
 
     static Devolucion crear(UUID pedidoId, String motivo, LocalDateTime ahora){
-        if(motivo == null|| motivo.isBlank()){
+        if (motivo == null || motivo.isBlank()) {
             throw new ReglaDominioException("La solicitud de devolución debe incluir una razón.");
         }
-        return new Devolucion(UUID.randomUUID(),pedidoId, motivo, LocalDateTime.now() );
+        return new Devolucion(UUID.randomUUID(), pedidoId, motivo, ahora);
     }
 
     public void verificarProceso(){
@@ -62,6 +62,13 @@ public class Devolucion {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public static Devolucion reconstruir(UUID id, UUID pedidoId, String motivo,
+                                         LocalDateTime fechaSolicitud, EstadoDevolucion estado) {
+        Devolucion devolucion = new Devolucion(id, pedidoId, motivo, fechaSolicitud);
+        devolucion.estado = estado;
+        return devolucion;
     }
 
 

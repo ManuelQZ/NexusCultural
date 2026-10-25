@@ -167,5 +167,18 @@ public class Pedido {
         return Objects.hash(id);
     }
 
+    public static Pedido reconstruir(UUID id, UUID compradorId, UUID articuloId, int cantidad,
+                                     Precio total, LocalDateTime fechaCreacion, EstadoPedido estado,
+                                     LocalDateTime fechaEntrega, String metodoPago,
+                                     String referenciaTransaccion, Devolucion devolucion) {
+        Pedido pedido = new Pedido(id, compradorId, articuloId, cantidad, total, fechaCreacion);
+        pedido.estado = estado;
+        pedido.fechaEntrega = fechaEntrega;
+        pedido.metodoPago = metodoPago;
+        pedido.referenciaTransaccion = referenciaTransaccion;
+        pedido.devolucion = devolucion;
+        return pedido;
+    }
+
 
 }
