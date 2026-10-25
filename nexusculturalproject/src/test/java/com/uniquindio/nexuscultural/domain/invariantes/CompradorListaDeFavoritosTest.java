@@ -13,7 +13,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CompradorListaDeFavoritosTest {
+public class    CompradorListaDeFavoritosTest {
     private final Email email = new Email("comprador@correo.com");
     private final UbicacionGeografica direccion = new UbicacionGeografica("Armenia", "Quindío", "Algúnlugar calle 225");
 

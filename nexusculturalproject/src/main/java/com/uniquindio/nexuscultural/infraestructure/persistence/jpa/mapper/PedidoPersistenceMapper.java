@@ -15,106 +15,38 @@ public class PedidoPersistenceMapper {
 
     public PedidoEntity toEntity(Pedido pedido) {
         PedidoEntity entity = new PedidoEntity();
-
         entity.setId(pedido.getId());
         entity.setCompradorId(pedido.getCompradorId());
         entity.setArticuloId(pedido.getArticuloId());
         entity.setCantidad(pedido.getCantidad());
         entity.setTotal(new PrecioEmbeddable(
-                pedido.getTotal().monto(),
-                pedido.getTotal().moneda()
-        ));
+                pedido.getTotal().monto(), pedido.getTotal().moneda()));
         entity.setEstado(pedido.getEstado());
         entity.setFechaCreacion(pedido.getFechaCreacion());
         entity.setFechaEntrega(pedido.getFechaEntrega());
         entity.setMetodoPago(pedido.getMetodoPago());
-        entity.setReferenciaTransaccion(
-                pedido.getReferenciaTransaccion()
-        );
-
-        if (pedido.getDevolucion() != null) {
-            validarPedidoDevolucion(pedido);
-
-            entity.setDevolucion(
-                    devolucionMapper.toEntity(pedido.getDevolucion())
-            );
-        }
-
+        entity.setReferenciaTransaccion(pedido.getReferenciaTransaccion());
         return entity;
     }
 
     public void actualizarEntity(Pedido pedido, PedidoEntity entity) {
         if (!pedido.getId().equals(entity.getId())) {
-            throw new IllegalArgumentException(
-                    "El ID del pedido no coincide con la entidad."
-            );
+            throw new IllegalArgumentException("El ID del pedido no coincide con la entidad.");
         }
-
         entity.setEstado(pedido.getEstado());
         entity.setFechaEntrega(pedido.getFechaEntrega());
         entity.setMetodoPago(pedido.getMetodoPago());
-        entity.setReferenciaTransaccion(
-                pedido.getReferenciaTransaccion()
-        );
-
-        Devolucion devolucion = pedido.getDevolucion();
-
-        if (devolucion == null) {
-            entity.setDevolucion(null);
-            return;
-        }
-
-        validarPedidoDevolucion(pedido);
-
-        if (entity.getDevolucion() == null) {
-            entity.setDevolucion(
-                    devolucionMapper.toEntity(devolucion)
-            );
-        } else {
-            if (!entity.getDevolucion().getPedidoId()
-                    .equals(pedido.getId())) {
-                throw new IllegalStateException(
-                        "La devolución existente pertenece a otro pedido."
-                );
-            }
-
-            if (!entity.getDevolucion().getId()
-                    .equals(devolucion.getId())) {
-                throw new IllegalStateException(
-                        "No se puede reemplazar una devolución existente "
-                                + "por otra con un ID diferente."
-                );
-            }
-
-            devolucionMapper.actualizarEntity(
-                    devolucion,
-                    entity.getDevolucion()
-            );
-        }
+        entity.setReferenciaTransaccion(pedido.getReferenciaTransaccion());
     }
 
-    private void validarPedidoDevolucion(Pedido pedido) {
-        if (!pedido.getId().equals(pedido.getDevolucion().getPedidoId())) {
-            throw new IllegalArgumentException(
-                    "La devolución debe pertenecer al mismo pedido."
-            );
-        }
-    }
-    public Pedido toDomain(PedidoEntity entity) {
+    public Pedido toDomain(PedidoEntity entity, Devolucion devolucion) {
         return Pedido.reconstruir(
-                entity.getId(),
-                entity.getCompradorId(),
-                entity.getArticuloId(),
+                entity.getId(), entity.getCompradorId(), entity.getArticuloId(),
                 entity.getCantidad(),
                 new Precio(entity.getTotal().getMonto(), entity.getTotal().getMoneda()),
-                entity.getFechaCreacion(),
-                entity.getEstado(),
-                entity.getFechaEntrega(),
-                entity.getMetodoPago(),
-                entity.getReferenciaTransaccion(),
-                entity.getDevolucion() == null
-                        ? null
-                        : devolucionMapper.toDomain(entity.getDevolucion()));
+                entity.getFechaCreacion(), entity.getEstado(), entity.getFechaEntrega(),
+                entity.getMetodoPago(), entity.getReferenciaTransaccion(),
+                devolucion);
     }
 
 }

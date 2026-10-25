@@ -8,31 +8,31 @@ import com.uniquindio.nexuscultural.domain.valueobject.EstadoPedido;
 
 public class PedidoRepositoryEnMemoria implements PedidoRepository {
 
-    private final Map<String, Pedido> pedidos = new HashMap<>();
+    private final Map<UUID, Pedido> pedidos = new HashMap<>();
 
     @Override
-    public Optional<Pedido> obtenerPorId(String id) {
+    public Optional<Pedido> obtenerPorId(UUID id) {
         return Optional.ofNullable(pedidos.get(id));
     }
 
     @Override
     public void guardar(Pedido pedido) {
-        pedidos.put(pedido.getId().toString(), pedido);
+        pedidos.put(pedido.getId(), pedido);
     }
 
     @Override
-    public List<Pedido> obtenerPorCompradorId(String compradorId) {
+    public List<Pedido> obtenerPorCompradorId(UUID compradorId) {
         return pedidos.values().stream()
-                .filter(p -> p.getCompradorId().toString().equals(compradorId))
+                .filter(p -> p.getCompradorId().equals(compradorId))
                 .sorted(Comparator.comparing(Pedido::getFechaCreacion).reversed())
                 .toList();
     }
 
     @Override
-    public boolean existePedidoEntregado(String compradorId, String articuloId) {
+    public boolean existePedidoEntregado(UUID compradorId, UUID articuloId) {
         return pedidos.values().stream()
-                .anyMatch(p -> p.getCompradorId().toString().equals(compradorId)
-                        && p.getArticuloId().toString().equals(articuloId)
+                .anyMatch(p -> p.getCompradorId().equals(compradorId)
+                        && p.getArticuloId().equals(articuloId)
                         && p.getEstado() == EstadoPedido.ENTREGADO);
     }
 }

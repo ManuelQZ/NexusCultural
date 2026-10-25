@@ -40,7 +40,7 @@ public class Pedido {
         this.estado = EstadoPedido.PENDIENTE;
     }
 
-    public static Pedido crGlobalExceptionHandlerGlobalExceptionHandlerear(UUID compradorId, UUID articuloId, int cantidad,
+    public static Pedido crear(UUID compradorId, UUID articuloId, int cantidad,
                                Precio precioUnitario, LocalDateTime ahora) {
         if (compradorId == null || articuloId == null) {
             throw new ReglaDominioException("El pedido necesita comprador y artículo.");
@@ -142,18 +142,6 @@ public class Pedido {
                     + estadoEsperado + " y actualmente se encuentra en estado " + estado + ".");
         }
     }
-
-    public UUID getId() { return id; }
-    public UUID getCompradorId() { return compradorId; }
-    public UUID getArticuloId() { return articuloId; }
-    public int getCantidad() { return cantidad; }
-    public Precio getTotal() { return total; }
-    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
-    public LocalDateTime getFechaEntrega() { return fechaEntrega; }
-    public EstadoPedido getEstado() { return estado; }
-    public String getMetodoPago() { return metodoPago; }
-    public String getReferenciaTransaccion() { return referenciaTransaccion; }
-    public Devolucion getDevolucion() { return devolucion; }
 
     @Override
     public boolean equals(Object o) {

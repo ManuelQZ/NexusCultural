@@ -16,7 +16,7 @@ public class DevolverProductoUseCase {
 
     public void ejecutar(DevolverProductoRequest request) {
         // 1. Buscar el pedido en el repositorio
-        Pedido pedido = pedidoRepository.obtenerPorId(request.idPedido().toString())
+        Pedido pedido = pedidoRepository.obtenerPorId(request.idPedido())
                 .orElseThrow(() -> new IllegalArgumentException("El pedido no existe."));
 
         // 2. Delegar la regla de negocio al Agregado (Domain Rule)

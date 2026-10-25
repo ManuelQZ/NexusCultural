@@ -14,7 +14,7 @@ public class ProcesarPagoPedidoUseCase {
 
     public void ejecutar(ProcesarPagoRequest request) {
         // 1. Buscar el pedido en el repositorio
-        Pedido pedido = pedidoRepository.obtenerPorId(request.idPedido().toString())
+        Pedido pedido = pedidoRepository.obtenerPorId(request.idPedido())
                 .orElseThrow(() -> new IllegalArgumentException("El pedido no existe."));
 
         // 2. Validar que el comprador que realiza el pago sea el dueño del pedido

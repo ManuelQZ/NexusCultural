@@ -2,11 +2,13 @@ package com.uniquindio.nexuscultural.domain.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 
 public interface PedidoRepository {
-    Optional<Pedido> obtenerPorId(String id);
+    Optional<Pedido> obtenerPorId(UUID id);
     void guardar(Pedido pedido);
-    List<Pedido> obtenerPorCompradorId(String compradorId);
-    boolean existePedidoEntregado(String compradorId, String articuloId);
+    List<Pedido> obtenerPorCompradorId(UUID compradorId);
+    boolean existePedidoEntregado(UUID compradorId, UUID articuloId);
 }

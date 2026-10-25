@@ -66,6 +66,6 @@ class PedidoTest {
         Pedido pedido = Pedido.crear(compradorId, articuloId, 1, precioUnitario, ahora);
 
         // Act & AssertGlobalExceptionHandler
-        GlobalExceptionHandler
+        assertEquals(pedido, pedido);
     }
 }
