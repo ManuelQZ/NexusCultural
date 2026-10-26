@@ -1,6 +1,6 @@
 package com.uniquindio.nexuscultural.infrastructure.rest;
 
-import com.uniquindio.nexuscultural.application.dto.CancelarPedidoRequest;
+import com.uniquindio.nexuscultural.application.dto.request.CancelarPedidoRequest;
 import com.uniquindio.nexuscultural.application.usecase.CancelarPedidoPendienteUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
