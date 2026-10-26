@@ -12,4 +12,7 @@ public interface PedidoJpaDataRepository extends JpaRepository<PedidoEntity, UUI
 
     boolean existsByCompradorIdAndArticuloIdAndEstado(
             UUID compradorId, UUID articuloId, EstadoPedido estado);
+
+    @Query("SELECT p.estado, COUNT(p) FROM PedidoEntity p GROUP BY p.estado")
+    List<Object[]> contarPedidosPorEstado();
 }

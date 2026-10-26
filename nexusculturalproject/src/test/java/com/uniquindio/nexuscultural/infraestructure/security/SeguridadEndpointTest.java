@@ -4,14 +4,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc; // Spring Boot 4
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -36,15 +38,23 @@ public class SeguridadEndpointTest {
     void conRolIncorrectoDeberiaResponder403() throws Exception {
         // /api/administradores/** exige ADMINISTRADOR
         mockMvc.perform(get("/api/administradores/algo")
-                        .with(user("comprador@test.com").roles("COMPRADOR")))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_COMPRADOR"))))
                 .andExpect(status().isForbidden());
     }
 
     @Test
+    void conRolCorrectoDeberiaResponder200() throws Exception {
+        // /api/articulos es público según SecurityConfig, pero probamos con rol COMPRADOR
+        mockMvc.perform(get("/api/articulos")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_COMPRADOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void conRolCorrectoNoDeberiaSerBloqueado() throws Exception {
-        // Sin controller devuelve 404; con controller, cambia a isOk()
+        // /api/compradores/** exige COMPRADOR o ADMINISTRADOR
         mockMvc.perform(get("/api/compradores/algo")
-                        .with(user("comprador@test.com").roles("COMPRADOR")))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_COMPRADOR"))))
                 .andExpect(status().is(allOf(not(401), not(403))));
     }
 
