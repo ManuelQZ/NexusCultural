@@ -4,6 +4,8 @@ import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.repository.PedidoRepository;
 import com.uniquindio.nexuscultural.domain.valueobject.Precio;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.PedidoRepositoryJpa;
+import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.DevolucionPersistenceMapper;
+import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.PedidoPersistenceMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import(PedidoRepositoryJpa.class) // Importa explicitamente el adaptador del puerto de dominio
+@Import({PedidoRepositoryJpa.class, PedidoPersistenceMapper.class, DevolucionPersistenceMapper.class})
 class PedidoRepositoryDataJpaTest {
 
     @Autowired

@@ -6,6 +6,7 @@ import com.uniquindio.nexuscultural.domain.valueobject.EstadoDevolucion;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.DevolucionJpaDataRepository;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.DevolucionRepositoryJpa;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.entity.DevolucionEntity;
+import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.DevolucionPersistenceMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-@Import(DevolucionRepositoryJpa.class)
+@Import({DevolucionRepositoryJpa.class, DevolucionPersistenceMapper.class})
 public class DevolucionRepositoryJpaTest {
 
     @Autowired
@@ -30,11 +31,20 @@ public class DevolucionRepositoryJpaTest {
 
     @Test
     void deberiaBuscarDevolucionPorEstado() {
-        // Arrange - Usar el adaptador del dominio, no directamente el repositorio JPA
-        // Act - Consultar por estado usando el puerto del dominio
+        // Arrange
+        dataRepository.deleteAll();
+        DevolucionEntity entity = new DevolucionEntity();
+        entity.setId(UUID.randomUUID());
+        entity.setPedidoId(UUID.randomUUID());
+        entity.setMotivo("Producto defectuoso");
+        entity.setFechaSolicitud(LocalDateTime.now());
+        entity.setEstado(EstadoDevolucion.EN_PROCESO);
+        dataRepository.saveAndFlush(entity);
+
+        // Act
         var devoluciones = devolucionRepository.obtenerPorEstado(EstadoDevolucion.EN_PROCESO);
 
-        // Assert - Verificar que funciona el mapper y el adaptador
+        // Assert
         assertEquals(1, devoluciones.size());
         assertEquals(EstadoDevolucion.EN_PROCESO, devoluciones.get(0).getEstado());
     }
