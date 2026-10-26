@@ -2,12 +2,15 @@ package com.uniquindio.nexuscultural.infrastructure.persistence;
 
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.repository.PedidoRepository;
+import com.uniquindio.nexuscultural.domain.valueobject.Precio;
+import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.PedidoRepositoryJpa;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +18,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import(PedidoRepositoryJpaAdapter.class) // Importa explicitamente el adaptador del puerto de dominio
+@Import(PedidoRepositoryJpa.class) // Importa explicitamente el adaptador del puerto de dominio
 class PedidoRepositoryDataJpaTest {
 
     @Autowired
@@ -27,11 +30,11 @@ class PedidoRepositoryDataJpaTest {
         // Arrange
         UUID compradorId = UUID.randomUUID();
         UUID articuloId = UUID.randomUUID();
-        Pedido pedido = Pedido.crear(compradorId, articuloId, 2, LocalDateTime.now());
+        Pedido pedido = Pedido.crear(compradorId, articuloId, 2, new Precio(new BigDecimal(15000), "cop"), LocalDateTime.now());
 
         // Act
         pedidoRepository.guardar(pedido);
-        Optional<Pedido> encontrado = pedidoRepository.buscarPorId(pedido.getId());
+        Optional<Pedido> encontrado = pedidoRepository.obtenerPorId(pedido.getId());
 
         // Assert
         assertTrue(encontrado.isPresent());

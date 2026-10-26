@@ -4,7 +4,10 @@ import com.uniquindio.nexuscultural.application.dto.request.CancelarPedidoReques
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.exception.RecursoNoEncontradoException;
 import com.uniquindio.nexuscultural.domain.repository.PedidoRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class CancelarPedidoPendienteUseCase {
 
     private final PedidoRepository pedidoRepository;
@@ -13,8 +16,9 @@ public class CancelarPedidoPendienteUseCase {
         this.pedidoRepository = pedidoRepository;
     }
 
+    @Transactional
     public void ejecutar(CancelarPedidoRequest request) {
-        Pedido pedido = pedidoRepository.buscarPorId(request.idPedido())
+        Pedido pedido = pedidoRepository.obtenerPorId(request.idPedido())
                 .orElseThrow(() -> new IllegalArgumentException("El pedido solicitado no existe"));
 
         if (!pedido.getCompradorId().equals(request.idComprador())) {
@@ -24,7 +28,7 @@ public class CancelarPedidoPendienteUseCase {
         if (!pedido.getEstado().name().equals("PENDIENTE")) {
             throw new IllegalStateException("Un pedido completado no se puede cancelar");
         }
-
+        pedido.cancelar(request.idComprador());
         pedidoRepository.guardar(pedido);
     }
 }

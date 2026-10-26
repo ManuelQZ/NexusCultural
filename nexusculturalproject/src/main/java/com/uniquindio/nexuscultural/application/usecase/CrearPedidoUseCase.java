@@ -6,9 +6,11 @@ import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.exception.RecursoNoEncontradoException;
 import com.uniquindio.nexuscultural.domain.repository.ArticuloRepository;
 import com.uniquindio.nexuscultural.domain.repository.PedidoRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Service
 public class CrearPedidoUseCase {
 
     private final PedidoRepository pedidoRepository;

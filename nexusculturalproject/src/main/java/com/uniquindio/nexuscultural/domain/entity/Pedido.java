@@ -149,6 +149,13 @@ public class Pedido {
         if (!(o instanceof Pedido otro)) return false;
         return id.equals(otro.id);
     }
+    public void cancelar(UUID solicitanteId) {
+        if (!compradorId.equals(solicitanteId)) {
+            throw new ReglaDominioException("Solo el comprador del pedido puede cancelarlo.");
+        }
+        verificarEstado(EstadoPedido.PENDIENTE);
+        estado = EstadoPedido.CANCELADO;
+    }
 
     @Override
     public int hashCode() {
