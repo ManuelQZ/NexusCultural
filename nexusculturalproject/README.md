@@ -1,14 +1,23 @@
-# NexusCultural
+# NexusCultural — Pruebas Avanzadas del Backend
 
-Proyecto de comercio de artesanías colombianas implementado con arquitectura hexagonal y Spring Boot 4.
+## Sección: Pruebas Avanzadas
 
-## Pruebas avanzadas
+### 1. Pruebas de Seguridad en Endpoints JWT
+Validamos el comportamiento del filtro de Spring Security sobre rutas protegidas mediante tokens JWT:
+- **401 Unauthorized**: Ocurre al intentar acceder a un endpoint restringido sin enviar un token de autenticación.
+- **403 Forbidden**: Ocurre cuando la solicitud incluye un token JWT válido pero el rol del usuario (ej. `ROLE_INVITADO`) no coincide con las autoridades requeridas por el endpoint.
+- **200 OK**: Se otorga acceso exitoso al enviar un token con el rol autorizado (ej. `ROLE_COMPRADOR`) simulado mediante `jwt().authorities(...)`.
 
-### Punto 1: Prueba de endpoint con seguridad
-Las pruebas de seguridad con MockMvc utilizan `jwt().authorities()` para simular usuarios autenticados sin pasar por el login real. Esto permite probar de forma aislada las reglas de autorización (401 sin token, 403 con rol incorrecto, 200 con rol correcto) sobre la SecurityFilterChain configurada en el proyecto. Al usar `@SpringBootTest` con `@AutoConfigureMockMvc`, se carga la configuración de seguridad completa, a diferencia de `@WebMvcTest` que aplicaría una configuración por defecto.
+### 2. Diferencia entre @DataJpaTest y @SpringBootTest
+- `@DataJpaTest` es una prueba de slice (capa focalizada) que únicamente inicializa los componentes de JPA, Hibernate y la base de datos H2. En Spring Boot 4 requiere importar explícitamente el adaptador del puerto del dominio con `@Import(Adaptador.class)` para probar la infraestructura sin cargar la aplicación completa.
+- `@SpringBootTest` inicializa el contexto completo de Spring (Controladores, Casos de Uso, Seguridad y Persistencia), siendo ideal para pruebas de integración globales pero con mayor tiempo de ejecución.
 
-### Punto 2: @DataJpaTest contra @SpringBootTest
-`@DataJpaTest` carga únicamente la capa de persistencia JPA (entidades y repositorios Spring Data), lo que la hace más rápida que `@SpringBootTest` que levanta toda la aplicación. Sin embargo, `@DataJpaTest` no carga los adaptadores personalizados, por lo que es necesario importarlos explícitamente con `@Import`. Esta anotación también usa H2 por defecto y deshace cada prueba automáticamente con `@Transactional`, ideal para tests de repositorio aislados.
+### 3. Pruebas de Integración End-to-End
+Una prueba de integración real verifica la comunicación continua entre todas las capas (Controller -> Caso de Uso -> Entidad de Dominio -> Repositorio -> BD H2). A diferencia de los tests unitarios con mocks, se ejecuta sin ningún `@MockitoBean` para garantizar que la traducción entre DTOs, entidades y tablas relacionales funcione correctamente en un entorno real.
 
-### Punto 3: Prueba de integración real (End-to-End)
-Las pruebas de integración con `@SpringBootTest` y `@AutoConfigureMockMvc` recorren el flujo completo sin mocks: Controller → Caso de Uso → Repositorio → Base de datos H2. A diferencia de las unitarias, estas pruebas detectan errores de configuración entre capas y problemas de mapeo que las pruebas aisladas no revelarían. Son más lentas pero necesarias para validar que el sistema funciona en conjunto. El uso de `@Transactional` deshace los cambios al terminar cada test para no contaminar datos entre pruebas.
+---
+
+### Evidencia de Ejecución
+
+![Pruebas en Verde](./docs/captura_tests_verde.png)
+*Resultado de la ejecucion del comando `./gradlew test` con todas las suites en verde.*
