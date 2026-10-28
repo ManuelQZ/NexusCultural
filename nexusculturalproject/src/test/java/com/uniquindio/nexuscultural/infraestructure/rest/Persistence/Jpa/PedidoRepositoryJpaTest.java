@@ -5,6 +5,7 @@ import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.repository.PedidoRepository;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoPedido;
 import com.uniquindio.nexuscultural.domain.valueobject.Precio;
+import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.PedidoJpaDataRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 
@@ -25,6 +27,9 @@ public class PedidoRepositoryJpaTest {
     @Autowired
 
     private PedidoRepository repository;
+
+    @Autowired
+    private PedidoJpaDataRepository dataRepository;
 
     @Test
     void deberiaGuardarYRecuperarUnPedidoConSuTotalYEstado() {
@@ -49,6 +54,29 @@ public class PedidoRepositoryJpaTest {
         assertEquals(EstadoPedido.PENDIENTE, recuperado.getEstado());
         assertEquals(ahora, recuperado.getFechaCreacion());
         assertNull(recuperado.getDevolucion());
+    }
+
+    @Test
+    void deberiaContarPedidosPorEstadoUsandoGroupBy() {
+        // Act - Consulta con GROUP BY sobre datos de data.sql
+        var resultados = dataRepository.contarPedidosPorEstado();
+
+        // Assert - Verificar que hay resultados
+        assertNotNull(resultados);
+        assertEquals(4, resultados.size()); // PENDIENTE, CONFIRMADO, ENTREGADO, EN_CAMINO
+
+        // Verificar conteos específicos según data.sql
+        long pendientes = resultados.stream()
+                .filter(row -> row[0].equals(EstadoPedido.PENDIENTE))
+                .mapToLong(row -> (Long) row[1])
+                .sum();
+        assertEquals(1L, pendientes);
+
+        long entregados = resultados.stream()
+                .filter(row -> row[0].equals(EstadoPedido.ENTREGADO))
+                .mapToLong(row -> (Long) row[1])
+                .sum();
+        assertEquals(2L, entregados);
     }
 
 }

@@ -1,22 +1,53 @@
 package com.uniquindio.nexuscultural.infraestructure.rest.Persistence.Jpa;
 
+import com.uniquindio.nexuscultural.domain.entity.Devolucion;
+import com.uniquindio.nexuscultural.domain.repository.DevolucionRepository;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoDevolucion;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.DevolucionJpaDataRepository;
+import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.DevolucionRepositoryJpa;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.entity.DevolucionEntity;
+import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.DevolucionPersistenceMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@Import({DevolucionRepositoryJpa.class, DevolucionPersistenceMapper.class})
 public class DevolucionRepositoryJpaTest {
+
+    @Autowired
+    private DevolucionRepository devolucionRepository;
+
     @Autowired
     private DevolucionJpaDataRepository dataRepository;
+
+    @Test
+    void deberiaBuscarDevolucionPorEstado() {
+        // Arrange
+        dataRepository.deleteAll();
+        DevolucionEntity entity = new DevolucionEntity();
+        entity.setId(UUID.randomUUID());
+        entity.setPedidoId(UUID.randomUUID());
+        entity.setMotivo("Producto defectuoso");
+        entity.setFechaSolicitud(LocalDateTime.now());
+        entity.setEstado(EstadoDevolucion.EN_PROCESO);
+        dataRepository.saveAndFlush(entity);
+
+        // Act
+        var devoluciones = devolucionRepository.obtenerPorEstado(EstadoDevolucion.EN_PROCESO);
+
+        // Assert
+        assertEquals(1, devoluciones.size());
+        assertEquals(EstadoDevolucion.EN_PROCESO, devoluciones.get(0).getEstado());
+    }
 
     @Test
     void noPermiteDosDevolucionesActivasParaElMismoPedido() {
