@@ -19,7 +19,7 @@ public class Artesano extends Usuario {
     private boolean activo;
 
     @Builder
-    private Artesano(UUID id,
+    public Artesano(UUID id,
                     String nombreCompleto,
                     Email email,
                     LocalDateTime fechaRegistro,
@@ -30,6 +30,12 @@ public class Artesano extends Usuario {
         this.trayectoriaCultural = trayectoriaCultural;
         this.ubicacionGeografica = ubicacionGeografica;
         this.activo = activo != null ? activo : true;
+    }
+
+    public static Artesano registrar(String nombreCompleto, Email email,
+                                     TrayectoriaCultural trayectoria, UbicacionGeografica ubicacion,
+                                     LocalDateTime ahora) {
+        return new Artesano(UUID.randomUUID(), nombreCompleto, email, ahora, trayectoria, ubicacion, true);
     }
 
     public void actualizarTrayectoria(TrayectoriaCultural nuevaTrayectoria) {

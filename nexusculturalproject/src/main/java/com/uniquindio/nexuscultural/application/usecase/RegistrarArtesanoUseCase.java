@@ -2,57 +2,61 @@ package com.uniquindio.nexuscultural.application.usecase;
 
 import com.uniquindio.nexuscultural.domain.entity.Artesano;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
+import com.uniquindio.nexuscultural.domain.repository.AdministradorRepository;
 import com.uniquindio.nexuscultural.domain.repository.ArtesanoRepository;
+import com.uniquindio.nexuscultural.domain.repository.CompradorRepository;
 import com.uniquindio.nexuscultural.domain.valueobject.Email;
 import com.uniquindio.nexuscultural.domain.valueobject.TrayectoriaCultural;
 import com.uniquindio.nexuscultural.domain.valueobject.UbicacionGeografica;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Service
 public class RegistrarArtesanoUseCase {
 
     private final ArtesanoRepository artesanoRepository;
+    private final CompradorRepository compradorRepository;
+    private final AdministradorRepository administradorRepository;
 
-    public RegistrarArtesanoUseCase(ArtesanoRepository artesanoRepository) {
+    public RegistrarArtesanoUseCase(ArtesanoRepository artesanoRepository,
+                                    CompradorRepository compradorRepository,
+                                    AdministradorRepository administradorRepository) {
         this.artesanoRepository = artesanoRepository;
+        this.compradorRepository = compradorRepository;
+        this.administradorRepository = administradorRepository;
     }
 
+    @Transactional
     public Artesano ejecutar(String nombreCompleto,
                              String emailTexto,
                              TrayectoriaCultural trayectoria,
                              UbicacionGeografica ubicacion) {
 
-        // Crear e instanciar el Value Object Email (su constructor valida la sintaxis)
         Email email = new Email(emailTexto);
 
-        // Validar que el nombre completo no venga nulo o vacío
-        if (nombreCompleto == null || nombreCompleto.trim().isEmpty()) {
-            throw new ReglaDominioException("El nombre completo del artesano es obligatorio.");
-        }
-
-        // Regla de dominio: Verificar que no exista otro artesano registrado con el mismo correo
-        if (artesanoRepository.buscarPorEmail(email).isPresent()) {
+         // 1. Validar si ya existe como Artesano
+        artesanoRepository.buscarPorEmail(email).ifPresent(a -> {
             throw new ReglaDominioException("Ya existe un artesano registrado con el correo: " + emailTexto);
-        }
+        });
 
-        // Regla de dominio: Verificar que la trayectoria cultural no sea nula
-        if (trayectoria == null) {
-            throw new ReglaDominioException("La trayectoria cultural del artesano es obligatoria.");
-        }
+        // 2. Validar si ya existe como Comprador
+        compradorRepository.buscarPorEmail(email).ifPresent(c -> {
+            throw new ReglaDominioException("Ya existe un comprador registrado con el correo: " + emailTexto);
+        });
 
-        // Construir la entidad Artesano con sus atributos iniciales
-        Artesano nuevoArtesano = Artesano.builder()
-                .id(UUID.randomUUID())
-                .nombreCompleto(nombreCompleto.trim())
-                .email(email)
-                .fechaRegistro(LocalDateTime.now())
-                .trayectoriaCultural(trayectoria)
-                .ubicacionGeografica(ubicacion)
-                .activo(true)
-                .build();
+        // 3. Validar si ya existe como Administrador
+        administradorRepository.buscarPorEmail(email).ifPresent(admin -> {
+            throw new ReglaDominioException("Ya existe un administrador registrado con el correo: " + emailTexto);
+        });
 
-        // Persistir mediante el repositorio y retornar
+        // La entidad valida sus propios atributos obligatorios y se instancia
+        Artesano nuevoArtesano = Artesano.registrar(nombreCompleto, email, trayectoria, ubicacion, LocalDateTime.now());
+
+        // El caso de uso solo persiste y retorna
         return artesanoRepository.guardar(nuevoArtesano);
     }
 }

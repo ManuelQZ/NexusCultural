@@ -8,7 +8,6 @@ import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.entity.Devol
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.entity.PedidoEntity;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.DevolucionPersistenceMapper;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.PedidoPersistenceMapper;
-import com.uniquindio.nexuscultural.infraestructure.rest.mapper.PedidoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
