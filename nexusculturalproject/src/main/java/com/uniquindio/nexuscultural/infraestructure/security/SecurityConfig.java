@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -38,6 +39,9 @@ public class SecurityConfig {
                         // 2. Catálogo público
                         .requestMatchers(HttpMethod.GET, "/api/catalogo/**", "/api/articulos/**").permitAll()
 
+                        // 2.1 Documentación Swagger / OpenAPI
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
                         // 3. Almacenamiento (ajusta si debe exigir autenticación)
                         .requestMatchers("/api/v1/storage/**").permitAll()
 
@@ -45,6 +49,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/articulos/**").hasAnyRole("ARTESANO", "ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/articulos/**").hasAnyRole("ARTESANO", "ADMINISTRADOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/articulos/**").hasAnyRole("ARTESANO", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/articulos/**").hasAnyRole("ARTESANO", "ADMINISTRADOR")
+
+                        // 4.1 Pedidos y devoluciones
+                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/devolucion/resolver").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/devoluciones/**").hasAnyRole("COMPRADOR", "ADMINISTRADOR")
 
                         // 5. Endpoints protegidos por rol
                         .requestMatchers("/api/administradores/**").hasRole("ADMINISTRADOR")

@@ -3,9 +3,11 @@ package com.uniquindio.nexuscultural.application.usecase;
 import com.uniquindio.nexuscultural.application.dto.request.DevolverProductoRequest;
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.repository.PedidoRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Service
 public class DevolverProductoUseCase {
 
     private final PedidoRepository pedidoRepository;
