@@ -20,37 +20,37 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
-    public ResponseEntity> handleRecursoNoEncontrado(RecursoNoEncontradoException ex) {
+    public ResponseEntity<Map<String, Object>> handleRecursoNoEncontrado(RecursoNoEncontradoException ex) {
         return construirRespuesta(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity> handleNoSuchElement(NoSuchElementException ex) {
+    public ResponseEntity<Map<String, Object>> handleNoSuchElement(NoSuchElementException ex) {
         return construirRespuesta(HttpStatus.NOT_FOUND, "El recurso solicitado no existe");
     }
 
     @ExceptionHandler(ReglaDominioException.class)
-    public ResponseEntity> handleReglaDominio(ReglaDominioException ex) {
+    public ResponseEntity<Map<String, Object>> handleReglaDominio(ReglaDominioException ex) {
         return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity> handleIllegalState(IllegalStateException ex) {
+    public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
         return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity> handleIllegalArgument(IllegalArgumentException ex) {
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         return construirRespuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
-    public ResponseEntity> handleAutenticacion(Exception ex) {
+    public ResponseEntity<Map<String, Object>> handleAutenticacion(Exception ex) {
         return construirRespuesta(HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errores = new HashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errores.put(error.getField(), error.getDefaultMessage());
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(cuerpo);
     }
 
-    private ResponseEntity> construirRespuesta(HttpStatus status, String mensaje) {
+    private ResponseEntity<Map<String, Object>> construirRespuesta(HttpStatus status, String mensaje) {
         Map<String, Object> cuerpo = Map.of(
                 "timestamp", LocalDateTime.now().toString(),
                 "status", status.value(),
