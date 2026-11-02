@@ -1,11 +1,13 @@
 package com.uniquindio.nexuscultural.infraestructure.rest;
 
+import com.uniquindio.nexuscultural.application.dto.request.ActualizarHistoriaArticuloRequest;
 import com.uniquindio.nexuscultural.application.dto.request.ActualizarInventarioRequest;
 import com.uniquindio.nexuscultural.application.dto.request.CrearArticuloRequest;
 import com.uniquindio.nexuscultural.application.dto.request.ReponerStockRequest;
 import com.uniquindio.nexuscultural.application.dto.response.ArticuloDetalleResponse;
 import com.uniquindio.nexuscultural.application.services.ArticuloService;
-import com.uniquindio.nexuscultural.application.usecase.CrearArticuloUseCase;
+import com.uniquindio.nexuscultural.application.usecase.ActualizarHistoriaArticuloUseCase;
+import com.uniquindio.nexuscultural.application.usecase.ActualizarInventarioUseCase;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.infraestructure.rest.mapper.ArticuloMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,10 +24,16 @@ import java.util.UUID;
 public class ArticuloController {
     private final ArticuloService articuloService;
     private final ArticuloMapper articuloMapper;
+    private final ActualizarHistoriaArticuloUseCase actualizarHistoriaUseCase;
+    private final ActualizarInventarioUseCase actualizarInventarioUseCase;
 
-    public ArticuloController(ArticuloService articuloService, ArticuloMapper articuloMapper) {
+    public ArticuloController(ArticuloService articuloService, ArticuloMapper articuloMapper,
+                              ActualizarHistoriaArticuloUseCase actualizarHistoriaArticuloUseCase,
+                              ActualizarInventarioUseCase actualizarInventarioUseCase) {
         this.articuloService = articuloService;
         this.articuloMapper = articuloMapper;
+        this.actualizarHistoriaUseCase = actualizarHistoriaArticuloUseCase;
+        this.actualizarInventarioUseCase = actualizarInventarioUseCase;
     }
 
     /** POST /api/articulos — El artesano publica un nuevo artículo */
@@ -35,14 +43,15 @@ public class ArticuloController {
         return ResponseEntity.status(HttpStatus.CREATED).body(articuloMapper.toResponse(articulo));
     }
 
-    /** PUT /api/articulos/{id}/inventario — Ajuste exacto de inventario */
+    /** PUT /api/articulos/{id}/inventario — Ajuste exacto de inventario (caso de uso) */
     @PutMapping("/{id}/inventario")
-    public ResponseEntity<ArticuloDetalleResponse> actualizarInventario(
+    public ResponseEntity<Void> actualizarInventario(
             @PathVariable UUID id,
             @Valid @RequestBody ActualizarInventarioRequest request) {
 
-        Articulo articulo = articuloService.actualizarInventario(request);
-        return ResponseEntity.ok(articuloMapper.toResponse(articulo));
+        actualizarInventarioUseCase.ejecutar(new ActualizarInventarioRequest(
+                id, request.idArtesano(), request.cantidad(), request.motivo()));
+        return ResponseEntity.noContent().build();
     }
 
     /** PATCH /api/articulos/{id}/reponer — Aumenta el stock en una cantidad delta */
@@ -72,6 +81,18 @@ public class ArticuloController {
             @RequestParam UUID artesanoId) {
 
         Articulo articulo = articuloService.reactivarArticulo(id, artesanoId);
+        return ResponseEntity.ok(articuloMapper.toResponse(articulo));
+    }
+
+
+    /** PATCH /api/articulos/{id}/historia — El artesano dueño actualiza la historia del artículo */
+    @PatchMapping("/{id}/historia")
+    public ResponseEntity<ArticuloDetalleResponse> actualizarHistoria(
+            @PathVariable UUID id,
+            @RequestParam UUID artesanoId,
+            @Valid @RequestBody ActualizarHistoriaArticuloRequest request) {
+
+        Articulo articulo = actualizarHistoriaUseCase.ejecutar(id, artesanoId, request.historia());
         return ResponseEntity.ok(articuloMapper.toResponse(articulo));
     }
 }

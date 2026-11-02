@@ -191,6 +191,15 @@ public class Articulo {
         }
         this.descripcion = nuevaDescripcion;
     }
+    public void actualizarHistoria(UUID solicitanteId, String nuevaHistoria) {
+        if (!artesanoId.equals(solicitanteId)) {
+            throw new ReglaDominioException("Solo el artesano dueño del artículo puede actualizar su historia.");
+        }
+        if (estado == EstadoArticulo.ELIMINADO) {
+            throw new ReglaDominioException("No se puede actualizar la historia de un artículo eliminado.");
+        }
+        actualizarDescripcion(nuevaHistoria);
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -2,6 +2,8 @@ package com.uniquindio.nexuscultural.infrastructure.rest;
 
 import com.uniquindio.nexuscultural.application.dto.response.ArticuloDetalleResponse;
 import com.uniquindio.nexuscultural.application.services.ArticuloService;
+import com.uniquindio.nexuscultural.application.usecase.ActualizarHistoriaArticuloUseCase;
+import com.uniquindio.nexuscultural.application.usecase.ActualizarInventarioUseCase;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.domain.exception.RecursoNoEncontradoException;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
@@ -47,6 +49,8 @@ class ArticuloControllerTest {
 
     @MockitoBean private ArticuloService articuloService;
     @MockitoBean private ArticuloMapper articuloMapper;
+    @MockitoBean private ActualizarHistoriaArticuloUseCase actualizarHistoriaUseCase;
+    @MockitoBean private ActualizarInventarioUseCase actualizarInventarioUseCase;
 
     private String cuerpo(int stock, String imagenes) {
         return """
@@ -178,5 +182,44 @@ class ArticuloControllerTest {
                 .andExpect(status().isForbidden());
 
         verifyNoInteractions(articuloService);
+    }
+    @Test
+    @DisplayName("Actualizar inventario responde 204 e invoca el caso de uso con el id de la ruta")
+    void actualizarInventarioDeberiaResponder204() throws Exception {
+        UUID id = UUID.randomUUID();
+        String cuerpo = """
+            {
+              "idArticulo": "%s",
+              "idArtesano": "%s",
+              "cantidad": 10,
+              "motivo": "Conteo físico"
+            }
+            """.formatted(UUID.randomUUID(), UUID.randomUUID());
+
+        mockMvc.perform(put("/api/articulos/{id}/inventario", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo)
+                        .with(user("artesano@test.com").roles("ARTESANO")))
+                .andExpect(status().isNoContent());
+
+        verify(actualizarInventarioUseCase).ejecutar(argThat(r -> r.idArticulo().equals(id)));
+    }
+
+    @Test
+    @DisplayName("Actualizar historia responde 200")
+    void actualizarHistoriaDeberiaResponder200() throws Exception {
+        Articulo articulo = articulo();
+        UUID artesanoId = articulo.getArtesanoId();
+        when(actualizarHistoriaUseCase.ejecutar(eq(articulo.getId()), eq(artesanoId), any()))
+                .thenReturn(articulo);
+        when(articuloMapper.toResponse(articulo)).thenReturn(respuesta(articulo, 5, "DISPONIBLE"));
+
+        mockMvc.perform(patch("/api/articulos/{id}/historia", articulo.getId())
+                        .param("artesanoId", artesanoId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"historia\": \"Hecha por maestros ceramistas de la región.\"}")
+                        .with(user("artesano@test.com").roles("ARTESANO")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("DISPONIBLE"));
     }
 }

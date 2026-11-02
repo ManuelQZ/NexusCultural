@@ -3,7 +3,9 @@ package com.uniquindio.nexuscultural.application.usecase;
 import com.uniquindio.nexuscultural.application.dto.request.ActualizarInventarioRequest;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.domain.repository.ArticuloRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ActualizarInventarioUseCase {
 
     private final ArticuloRepository articuloRepository;
