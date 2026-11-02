@@ -5,10 +5,13 @@ import com.uniquindio.nexuscultural.application.dto.request.ActualizarInventario
 import com.uniquindio.nexuscultural.application.dto.request.CrearArticuloRequest;
 import com.uniquindio.nexuscultural.application.dto.request.ReponerStockRequest;
 import com.uniquindio.nexuscultural.application.dto.response.ArticuloDetalleResponse;
+import com.uniquindio.nexuscultural.application.dto.response.PaginaResponse;
 import com.uniquindio.nexuscultural.application.services.ArticuloService;
 import com.uniquindio.nexuscultural.application.usecase.ActualizarHistoriaArticuloUseCase;
 import com.uniquindio.nexuscultural.application.usecase.ActualizarInventarioUseCase;
+import com.uniquindio.nexuscultural.application.usecase.BuscarArticulosUseCase;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
+import com.uniquindio.nexuscultural.domain.valueobject.Grupo;
 import com.uniquindio.nexuscultural.infraestructure.rest.mapper.ArticuloMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,14 +29,17 @@ public class ArticuloController {
     private final ArticuloMapper articuloMapper;
     private final ActualizarHistoriaArticuloUseCase actualizarHistoriaUseCase;
     private final ActualizarInventarioUseCase actualizarInventarioUseCase;
+    private final BuscarArticulosUseCase buscarArticulosUseCase;
 
     public ArticuloController(ArticuloService articuloService, ArticuloMapper articuloMapper,
                               ActualizarHistoriaArticuloUseCase actualizarHistoriaArticuloUseCase,
-                              ActualizarInventarioUseCase actualizarInventarioUseCase) {
+                              ActualizarInventarioUseCase actualizarInventarioUseCase,
+                              BuscarArticulosUseCase buscarArticuloUseCase) {
         this.articuloService = articuloService;
         this.articuloMapper = articuloMapper;
         this.actualizarHistoriaUseCase = actualizarHistoriaArticuloUseCase;
         this.actualizarInventarioUseCase = actualizarInventarioUseCase;
+        this.buscarArticulosUseCase = buscarArticuloUseCase;
     }
 
     /** POST /api/articulos — El artesano publica un nuevo artículo */
@@ -94,5 +100,17 @@ public class ArticuloController {
 
         Articulo articulo = actualizarHistoriaUseCase.ejecutar(id, artesanoId, request.historia());
         return ResponseEntity.ok(articuloMapper.toResponse(articulo));
+    }
+
+    /** GET /api/articulos?texto=&grupo=&pagina=0&tamano=10 — Catálogo paginado (público) */
+    @GetMapping
+    public ResponseEntity<PaginaResponse<ArticuloDetalleResponse>> listar(
+            @RequestParam(required = false) String texto,
+            @RequestParam(required = false) Grupo grupo,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamano) {
+
+        return ResponseEntity.ok(articuloMapper.toPaginaResponse(
+                buscarArticulosUseCase.ejecutar(texto, grupo, pagina, tamano)));
     }
 }

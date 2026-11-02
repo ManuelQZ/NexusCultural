@@ -4,6 +4,7 @@ import com.uniquindio.nexuscultural.application.dto.response.ArticuloDetalleResp
 import com.uniquindio.nexuscultural.application.services.ArticuloService;
 import com.uniquindio.nexuscultural.application.usecase.ActualizarHistoriaArticuloUseCase;
 import com.uniquindio.nexuscultural.application.usecase.ActualizarInventarioUseCase;
+import com.uniquindio.nexuscultural.application.usecase.BuscarArticulosUseCase;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.domain.exception.RecursoNoEncontradoException;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @WebMvcTest(ArticuloController.class)
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class, GlobalExceptionHandler.class})
@@ -51,6 +53,7 @@ class ArticuloControllerTest {
     @MockitoBean private ArticuloMapper articuloMapper;
     @MockitoBean private ActualizarHistoriaArticuloUseCase actualizarHistoriaUseCase;
     @MockitoBean private ActualizarInventarioUseCase actualizarInventarioUseCase;
+    @MockitoBean private BuscarArticulosUseCase buscarArticulosUseCase;
 
     private String cuerpo(int stock, String imagenes) {
         return """
