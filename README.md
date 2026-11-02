@@ -1,10 +1,9 @@
 # NexusCultural — Pruebas Avanzadas del Backend
 
-## Sección: Pruebas y dificultades encontradas
+## Pruebas avanzadas
 
-
-
-
+En esta sección se documentan los puntos requeridos de la entrega de seguimiento de pruebas del backend, explicando el funcionamiento y las decisiones de diseño adoptadas en cada caso.
+![test.png](nexusculturalproject/docs/images/test.png)
 ## 0. Pruebas de repositorios con H2
 
 Mockito no permite hacer consultas SQL, por lo que probar los repositorios debe ser sí o sí contra la base de datos en H2. Se necesita verificar que repositorios, mappers y las reglas establecidas por anotaciones funcionen correctamente.
@@ -12,24 +11,22 @@ Mockito no permite hacer consultas SQL, por lo que probar los repositorios debe 
 @Transactional hace que cada prueba se ejecute dentro de una transacción que se revierte al terminar, de modo que los datos de una prueba no afectan a las demás y la base queda limpia.
 
 Lo que más se nos dificultó en el código fue crear mappers con formatos correctos y adaptados a las reglas que hicimos respecto a devolución, ya que el cambio de formato llegaba a tener choques con el uso de la clase Devolución.
-
+![pruebas_avanzadas_0.png](nexusculturalproject/docs/images/pruebas_avanzadas_0.png)
 ## 1. Pruebas de seguridad con Spring Security
 
 spring-security-test nos permite probar la seguridad y la autenticación en un proyecto hecho con Spring Security. Ofrece herramientas como el mock-user para no tener problemas con los test, asignándole a este user un rol y autenticándolo.
 
 WebMVC ignora completamente las anotaciones @Config, ya que solo busca componentes @Controller. SecurityFilterChain normalmente está bajo la anotación @Config o, en nuestro caso, @Bean.
 
-En esta parte, ajustar el tema de autentificación para que sea realmente seguro es complejo. Sin embargo, con lo que tenemos, se puede hacer algo temporal con fines académicos, pero el uso de Cookies y la protección de datos más delicados pueden suponer dificultad a largo plazo.
-
 En este ejercicio en específico, lo que más nos costó fue settear correctamente el AuthenticationFilter para que pasara las pruebas.
 
-### 1.1. Pruebas de seguridad en endpoints JWT
+### 1.1. Pruebas de seguridad en endpoint protegido JWT (/api/pedidos/protegido)
 
-Validamos el comportamiento del filtro de Spring Security sobre rutas protegidas mediante tokens JWT:
+Validamos el comportamiento del filtro de Spring Security sobre la ruta protegida mediante tokens JWT generados con nuestro JwtTokenProviderAdapter:
 
-- *401 Unauthorized:* ocurre al intentar acceder a un endpoint restringido sin enviar un token de autenticación.
-- *403 Forbidden:* ocurre cuando la solicitud incluye un token JWT válido, pero el rol del usuario (ej. ROLE_INVITADO) no coincide con las autoridades requeridas por el endpoint.
-- *200 OK:* se otorga acceso exitoso al enviar un token con el rol autorizado (ej. ROLE_COMPRADOR) simulado mediante jwt().authorities(...).
+- *401 Unauthorized:* ocurre al intentar acceder a la ruta protegida sin enviar un token de autenticación en la cabecera Authorization.
+- *403 Forbidden:* ocurre cuando la solicitud incluye un token JWT válido pero emitido para un rol no autorizado (ej. ARTESANO intentando acceder a una ruta exclusiva de COMPRADOR/ADMIN).
+- *200 OK:* se otorga acceso exitoso al enviar un token JWT válido con el rol autorizado (ROLE_COMPRADOR).
 
 ## 2. Pruebas con SpringBootTest y DataJpaTest
 

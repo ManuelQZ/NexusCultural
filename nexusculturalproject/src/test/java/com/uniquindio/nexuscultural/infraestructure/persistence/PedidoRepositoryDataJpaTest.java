@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.infrastructure.persistence;
+package com.uniquindio.nexuscultural.infraestructure.persistence;
 
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.repository.PedidoRepository;

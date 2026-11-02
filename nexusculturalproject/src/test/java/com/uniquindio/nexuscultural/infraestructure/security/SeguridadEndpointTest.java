@@ -44,6 +44,42 @@ public class SeguridadEndpointTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // =========================================================================
+    // PUNTO 1: PROBAR UN ENDPOINT CON SEGURIDAD (401, 403 y 200)
+    // Ruta protegida: /api/pedidos/protegido (requiere rol COMPRADOR / ADMIN)
+    // =========================================================================
+
+    @Test
+    @DisplayName("Punto 1.1: Petición a ruta protegida sin token responde 401 Unauthorized")
+    void sinTokenEnRutaProtegidaDeberiaResponder401() throws Exception {
+        mockMvc.perform(get("/api/pedidos/protegido"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("Punto 1.2: Petición a ruta protegida con token de rol equivocado responde 403 Forbidden")
+    void conTokenDeRolEquivocadoEnRutaProtegidaDeberiaResponder403() throws Exception {
+        String tokenArtesano = tokenProvider
+                .generarToken(UUID.randomUUID(), "artesano@test.com", "ARTESANO")
+                .token();
+
+        mockMvc.perform(get("/api/pedidos/protegido")
+                        .header("Authorization", "Bearer " + tokenArtesano))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Punto 1.3: Petición a ruta protegida con token de rol correcto responde 200 OK")
+    void conTokenDeRolCorrectoEnRutaProtegidaDeberiaResponder200() throws Exception {
+        String tokenComprador = tokenProvider
+                .generarToken(UUID.randomUUID(), "comprador@test.com", "COMPRADOR")
+                .token();
+
+        mockMvc.perform(get("/api/pedidos/protegido")
+                        .header("Authorization", "Bearer " + tokenComprador))
+                .andExpect(status().isOk());
+    }
+
+    // =========================================================================
     // PRUEBAS GENERALES DE SEGURIDAD Y ENDPOINTS (MAIN)
     // =========================================================================
 

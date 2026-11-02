@@ -1,4 +1,4 @@
-package com.uniquindio.nexuscultural.infrastructure.rest;
+package com.uniquindio.nexuscultural.infraestructure.rest.Persistence.Jpa;
 
 import com.uniquindio.nexuscultural.application.dto.response.PedidoDetalleResponse;
 import com.uniquindio.nexuscultural.application.services.PedidoService;

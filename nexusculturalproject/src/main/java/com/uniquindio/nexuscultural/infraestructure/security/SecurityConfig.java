@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/articulos/**").hasAnyRole("ARTESANO", "ADMINISTRADOR", "ADMIN")
 
                         // 5. Pedidos y devoluciones
+                        .requestMatchers("/api/pedidos/protegido").hasAnyRole("COMPRADOR", "ADMINISTRADOR", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/devolucion/resolver").hasAnyRole("ADMINISTRADOR", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/devoluciones/**").hasAnyRole("COMPRADOR", "ADMINISTRADOR", "ADMIN")
                         .requestMatchers("/api/devoluciones/**").hasAnyRole("COMPRADOR", "ADMINISTRADOR", "ADMIN")
