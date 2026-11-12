@@ -1,0 +1,12 @@
+<header>
+  <p>Bienvenido a {{ title() }}</p>
+  <ul>
+    <li><a routerLink="/">Inicio</a></li>
+    <li><a routerLink="/login">Login</a></li>
+    <li><a routerLink="/catalogo">Catálogo</a></li>
+  </ul>
+</header>
+<router-outlet />
+<footer>{{ footer() }}</footer>
+
+
