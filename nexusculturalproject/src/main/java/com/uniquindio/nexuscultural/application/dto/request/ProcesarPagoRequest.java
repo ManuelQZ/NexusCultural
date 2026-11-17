@@ -11,12 +11,16 @@ import java.util.UUID;
 public record ProcesarPagoRequest(
         @NotNull(message = "El ID del pedido es obligatorio")
         UUID idPedido,
+
         @NotNull(message = "El ID del comprador es obligatorio")
         UUID idComprador,
+
         @NotNull(message = "El monto es obligatorio")
         Precio monto,
+
         @NotBlank(message = "El método de pago es obligatorio")
         String metodoPago,
+
         @NotBlank(message = "La referencia de transacción es obligatoria")
         String referenciaTransaccion
 ) {}

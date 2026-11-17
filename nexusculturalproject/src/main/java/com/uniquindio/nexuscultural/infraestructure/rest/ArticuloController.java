@@ -13,6 +13,7 @@ import com.uniquindio.nexuscultural.application.usecase.BuscarArticulosUseCase;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.domain.valueobject.Grupo;
 import com.uniquindio.nexuscultural.infraestructure.rest.mapper.ArticuloMapper;
+import com.uniquindio.nexuscultural.infraestructure.security.UsuarioActual;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,11 @@ public class ArticuloController {
     /** POST /api/articulos — El artesano publica un nuevo artículo */
     @PostMapping
     public ResponseEntity<ArticuloDetalleResponse> publicar(@Valid @RequestBody CrearArticuloRequest request) {
-        Articulo articulo = articuloService.publicarArticulo(request);
+        // El artesano es quien dice el token, no el cuerpo de la petición
+        UUID yo = UsuarioActual.id().orElse(request.artesanoId());
+        Articulo articulo = articuloService.publicarArticulo(new CrearArticuloRequest(
+                yo, request.titulo(), request.descripcion(), request.stock(),
+                request.precio(), request.grupo(), request.imagenes()));
         return ResponseEntity.status(HttpStatus.CREATED).body(articuloMapper.toResponse(articulo));
     }
 
@@ -55,8 +60,9 @@ public class ArticuloController {
             @PathVariable UUID id,
             @Valid @RequestBody ActualizarInventarioRequest request) {
 
+        UUID yo = UsuarioActual.id().orElse(request.idArtesano());
         actualizarInventarioUseCase.ejecutar(new ActualizarInventarioRequest(
-                id, request.idArtesano(), request.cantidad(), request.motivo()));
+                id, yo, request.cantidad(), request.motivo()));
         return ResponseEntity.noContent().build();
     }
 
@@ -76,7 +82,8 @@ public class ArticuloController {
             @PathVariable UUID id,
             @RequestParam UUID artesanoId) {
 
-        Articulo articulo = articuloService.inactivarArticulo(id, artesanoId);
+        UUID yo = UsuarioActual.id().orElse(artesanoId);
+        Articulo articulo = articuloService.inactivarArticulo(id, yo);
         return ResponseEntity.ok(articuloMapper.toResponse(articulo));
     }
 
@@ -86,10 +93,10 @@ public class ArticuloController {
             @PathVariable UUID id,
             @RequestParam UUID artesanoId) {
 
-        Articulo articulo = articuloService.reactivarArticulo(id, artesanoId);
+        UUID yo = UsuarioActual.id().orElse(artesanoId);
+        Articulo articulo = articuloService.reactivarArticulo(id, yo);
         return ResponseEntity.ok(articuloMapper.toResponse(articulo));
     }
-
 
     /** PATCH /api/articulos/{id}/historia — El artesano dueño actualiza la historia del artículo */
     @PatchMapping("/{id}/historia")
@@ -98,7 +105,8 @@ public class ArticuloController {
             @RequestParam UUID artesanoId,
             @Valid @RequestBody ActualizarHistoriaArticuloRequest request) {
 
-        Articulo articulo = actualizarHistoriaUseCase.ejecutar(id, artesanoId, request.historia());
+        UUID yo = UsuarioActual.id().orElse(artesanoId);
+        Articulo articulo = actualizarHistoriaUseCase.ejecutar(id, yo, request.historia());
         return ResponseEntity.ok(articuloMapper.toResponse(articulo));
     }
 
