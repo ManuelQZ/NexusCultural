@@ -18,15 +18,17 @@ public interface ArticuloJpaDataRepository extends JpaRepository<ArticuloEntity,
     List<ArticuloEntity> findByEstado(EstadoArticulo estado);
 
     @Query("""
-        SELECT a FROM ArticuloEntity a
-        WHERE a.estado <> :excluido
-          AND (:grupo IS NULL OR a.grupo = :grupo)
-          AND (LOWER(a.titulo) LIKE LOWER(CONCAT('%', :texto, '%'))
-               OR LOWER(a.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')))
-        """)
+            SELECT a FROM ArticuloEntity a
+            WHERE a.estado <> :excluido
+              AND (:grupo IS NULL OR a.grupo = :grupo)
+              AND (LOWER(a.titulo) LIKE LOWER(CONCAT('%', :texto, '%'))
+                   OR LOWER(a.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')))
+            """)
     Page<ArticuloEntity> buscar(@Param("texto") String texto,
                                 @Param("grupo") Grupo grupo,
                                 @Param("excluido") EstadoArticulo excluido,
                                 Pageable pageable);
+
+
 
 }

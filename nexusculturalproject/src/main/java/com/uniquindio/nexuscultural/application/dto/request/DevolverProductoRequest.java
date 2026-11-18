@@ -9,9 +9,12 @@ import java.util.UUID;
 public record DevolverProductoRequest(
         @NotNull(message = "El ID del pedido es obligatorio")
         UUID idPedido,
+
         @NotNull(message = "El ID del comprador es obligatorio")
         UUID idComprador,
+
         @NotBlank(message = "El motivo de la devolución es obligatorio")
         String motivo,
+
         String descripcionEstado
 ) {}

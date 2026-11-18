@@ -72,6 +72,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/compradores/**").hasAnyRole("COMPRADOR", "ADMINISTRADOR", "ADMIN")
                         .requestMatchers("/api/administradores/**").hasAnyRole("ADMINISTRADOR", "ADMIN")
 
+
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos/*/enviar", "/api/pedidos/*/entregar").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/pedidos/mios").hasAnyRole("COMPRADOR", "ADMINISTRADOR")
+
                         // 7. Cualquier otra petición requiere autenticación
                         .anyRequest().authenticated()
                 )

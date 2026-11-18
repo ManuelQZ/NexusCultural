@@ -10,6 +10,7 @@ import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.Artic
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,5 +64,14 @@ public class ArticuloRepositoryJpa implements ArticuloRepository {
                 resultado.getTotalPages(),
                 pagina,
                 tamano);
+    }
+    @Override
+    public Pagina<Articulo> buscarPaginado(String texto, Grupo grupo, int pagina, int tamano) {
+        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "fechaPublicacion"));
+        Page<ArticuloEntity> resultado = dataRepository.buscar(
+                texto == null ? "" : texto.trim(), grupo, EstadoArticulo.ELIMINADO, pageable);
+        return new Pagina<>(
+                resultado.getContent().stream().map(mapper::toDomain).toList(),
+                resultado.getTotalElements(), resultado.getTotalPages(), pagina, tamano);
     }
     }
