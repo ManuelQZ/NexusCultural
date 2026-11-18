@@ -1,17 +1,26 @@
-.error {
-  color: red;
-  font-size: 0.85rem;
+.login-wrapper {
+  background: radial-gradient(circle at center, #faf7f2 0%, #f3ede4 100%);
+}
+
+.login-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.bg-terracota {
+  background-color: var(--nc-primary) !important;
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.text-gold {
+  color: var(--nc-gold-bright) !important;
 }
 
 .letter-spacing-code {
-  letter-spacing: 0.5rem;
-}
-
-.card {
-  border-radius: 0.75rem;
-  overflow: hidden;
-}
-
-.card-header {
-  border-bottom: 0;
+  letter-spacing: 0.6rem;
+  font-size: 1.5rem;
 }

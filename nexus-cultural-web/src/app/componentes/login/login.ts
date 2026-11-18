@@ -1,12 +1,12 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../servicios/auth';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -28,16 +28,13 @@ export class Login {
     codigo: ['', [Validators.pattern('^[0-9]{6}$')]]
   });
 
-  canSolicitar = computed(() => {
-    const emailControl = this.loginForm.get('email');
-    return !this.isLoading() && !!emailControl?.valid;
-  });
+  canSolicitar(): boolean {
+    return !this.isLoading();
+  }
 
-  canVerificar = computed(() => {
-    const emailControl = this.loginForm.get('email');
-    const codigoControl = this.loginForm.get('codigo');
-    return !this.isLoading() && !!emailControl?.valid && !!codigoControl?.value && codigoControl.value.length === 6;
-  });
+  canVerificar(): boolean {
+    return !this.isLoading();
+  }
 
   onSubmit(): void {
     if (this.paso() === 1) {
@@ -48,8 +45,15 @@ export class Login {
   }
 
   solicitarCodigo(): void {
-    const email = this.loginForm.get('email')?.value?.trim();
-    if (!email) return;
+    const emailControl = this.loginForm.get('email');
+    emailControl?.markAsTouched();
+
+    const email = emailControl?.value?.trim();
+    if (!email || emailControl?.invalid) {
+      this.esError.set(true);
+      this.mensaje.set('Por favor ingresa un correo electrónico válido.');
+      return;
+    }
 
     this.isLoading.set(true);
     this.mensaje.set('');
@@ -66,15 +70,34 @@ export class Login {
         error: (err) => {
           this.isLoading.set(false);
           this.esError.set(true);
-          this.mensaje.set(err.error?.mensaje || 'Error al solicitar el código. Verifica el correo ingresado.');
+          console.error('Error al solicitar OTP:', err);
+          if (err.status === 0) {
+            this.mensaje.set('No se pudo conectar con el servidor (bloqueo CORS o sin conexión). Si usas npm start, reinicia el servidor para cargar el proxy.');
+          } else {
+            this.mensaje.set(err.error?.mensaje || err.error?.message || `Error del servidor (${err.status}): Verifica el correo ingresado.`);
+          }
         }
       });
   }
 
   verificarCodigo(): void {
-    const email = this.loginForm.get('email')?.value?.trim();
-    const codigo = this.loginForm.get('codigo')?.value?.trim();
-    if (!email || !codigo) return;
+    const emailControl = this.loginForm.get('email');
+    const codigoControl = this.loginForm.get('codigo');
+    codigoControl?.markAsTouched();
+
+    const email = emailControl?.value?.trim();
+    const codigo = codigoControl?.value?.trim();
+
+    if (!codigo || codigo.length !== 6) {
+      this.esError.set(true);
+      this.mensaje.set('Por favor ingresa el código numérico de 6 dígitos.');
+      return;
+    }
+
+    if (!email) {
+      this.paso.set(1);
+      return;
+    }
 
     this.isLoading.set(true);
     this.mensaje.set('');
@@ -83,18 +106,26 @@ export class Login {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          this.authService.guardarSesion(res);
+          this.authService.guardarSesion(res, email);
           this.isLoading.set(false);
           this.esError.set(false);
-          this.mensaje.set('¡Sesión iniciada correctamente! Redirigiendo...');
+          this.mensaje.set('¡Sesión iniciada correctamente! Redirigiendo a tu panel...');
+
+          // REDIRECCIÓN SEGÚN ROL REAL
           setTimeout(() => {
-            this.router.navigate(['/']);
-          }, 1000);
+            const destino = this.authService.obtenerRutaPorRol();
+            this.router.navigate([destino]);
+          }, 800);
         },
         error: (err) => {
           this.isLoading.set(false);
           this.esError.set(true);
-          this.mensaje.set(err.error?.mensaje || 'Código OTP inválido o expirado. Intenta de nuevo.');
+          console.error('Error al verificar OTP:', err);
+          if (err.status === 0) {
+            this.mensaje.set('No se pudo conectar con el servidor (bloqueo CORS o sin conexión).');
+          } else {
+            this.mensaje.set(err.error?.mensaje || err.error?.message || `Código OTP inválido o expirado (${err.status}).`);
+          }
         }
       });
   }

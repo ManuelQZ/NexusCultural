@@ -1,0 +1,178 @@
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      @if (registroCompletado()) {
+        <div class="card nc-card p-5 text-center shadow-sm">
+          <div class="success-icon mb-3 mx-auto bg-emerald text-white">
+            <i class="fa-solid fa-check fs-2"></i>
+          </div>
+          <h2 class="font-serif fw-bold text-terracota mb-2">¡Registro Exitoso!</h2>
+          <p class="text-muted mb-4 max-w-500 mx-auto">
+            Tu cuenta ha sido creada exitosamente en el servidor de Nexus Cultural como <strong>{{ rolSeleccionado() }}</strong>. Ya puedes ingresar solicitando tu código OTP.
+          </p>
+          <div class="d-flex justify-content-center gap-3">
+            <a routerLink="/login" class="btn btn-nc-primary px-4">
+              <i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar Sesión con OTP
+            </a>
+            <button class="btn btn-outline-secondary" (click)="reiniciar()">
+              Registrar otra cuenta
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="card nc-card shadow-sm border-0">
+          <div class="card-header bg-terracota text-white text-center py-4">
+            <span class="badge bg-gold text-dark mb-2 px-3 py-1 rounded-pill">Nexus Cultural • Registro</span>
+            <h3 class="font-serif fw-bold mb-1">Crea tu Cuenta</h3>
+            <p class="small text-white-50 mb-0">Selecciona si eres Comprador o Maestro Artesano</p>
+          </div>
+
+          <div class="card-body p-4 p-md-5">
+            <!-- SELECTOR DE ROL: ÚNICAMENTE COMPRADOR O ARTESANO -->
+            <label class="form-label fw-bold mb-3 font-serif fs-5">
+              <i class="fa-solid fa-user-tag text-terracota me-2"></i>Selecciona tu Perfil
+            </label>
+
+            <div class="row g-3 mb-4">
+              <!-- Comprador Cultural -->
+              <div class="col-md-6">
+                <div class="role-card p-4 h-100 rounded-3 border text-center cursor-pointer"
+                     [class.active]="rolSeleccionado() === 'COMPRADOR'"
+                     (click)="seleccionarRol('COMPRADOR')">
+                  <div class="role-icon mb-2">
+                    <i class="fa-solid fa-bag-shopping fs-1"></i>
+                  </div>
+                  <h5 class="fw-bold mb-1">Comprador Cultural</h5>
+                  <small class="text-muted d-block">Deseo adquirir artesanías colombianas auténticas con comercio justo.</small>
+                </div>
+              </div>
+
+              <!-- Maestro Artesano -->
+              <div class="col-md-6">
+                <div class="role-card p-4 h-100 rounded-3 border text-center cursor-pointer"
+                     [class.active]="rolSeleccionado() === 'ARTESANO'"
+                     (click)="seleccionarRol('ARTESANO')">
+                  <div class="role-icon mb-2">
+                    <i class="fa-solid fa-hands-holding-child fs-1"></i>
+                  </div>
+                  <h5 class="fw-bold mb-1">Maestro Artesano</h5>
+                  <small class="text-muted d-block">Soy creador tradicional y deseo publicar y vender mis obras.</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aviso sobre Administradores -->
+            <div class="alert alert-light border small text-muted mb-4 d-flex align-items-center gap-2">
+              <i class="fa-solid fa-circle-info text-gold"></i>
+              <span>¿Eres administrador? Las cuentas administrativas son asignadas internamente por la dirección del sistema.</span>
+            </div>
+
+            @if (mensajeError()) {
+              <div class="alert alert-danger py-2 small mb-4">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                {{ mensajeError() }}
+              </div>
+            }
+
+            <hr class="my-4 text-muted" />
+
+            <!-- FORMULARIO 1: COMPRADOR -->
+            @if (rolSeleccionado() === 'COMPRADOR') {
+              <div>
+                <h5 class="font-serif fw-bold text-terracota mb-3">
+                  <i class="fa-solid fa-address-card me-2"></i>Datos del Comprador
+                </h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Nombre Completo *</label>
+                    <input type="text" class="form-control" [(ngModel)]="comprador.nombreCompleto" placeholder="Ej. Carlos Martínez" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Correo Electrónico (Para recibir códigos OTP) *</label>
+                    <input type="email" class="form-control" [(ngModel)]="comprador.email" placeholder="carlos@correo.com" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Departamento de Entrega *</label>
+                    <select class="form-select" [(ngModel)]="comprador.departamento">
+                      @for (dep of departamentos; track dep) {
+                        <option [value]="dep">{{ dep }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Municipio o Ciudad *</label>
+                    <input type="text" class="form-control" [(ngModel)]="comprador.municipio" placeholder="Ej. Armenia" />
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label small fw-semibold">Dirección de Entrega *</label>
+                    <input type="text" class="form-control" [(ngModel)]="comprador.direccion" placeholder="Carrera 15 # 12N - 25, Apto 402" />
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- FORMULARIO 2: ARTESANO -->
+            @if (rolSeleccionado() === 'ARTESANO') {
+              <div>
+                <h5 class="font-serif fw-bold text-terracota mb-3">
+                  <i class="fa-solid fa-id-badge me-2"></i>Datos del Maestro Artesano y Taller
+                </h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Nombre Completo del Artesano *</label>
+                    <input type="text" class="form-control" [(ngModel)]="artesano.nombreCompleto" placeholder="Ej. Rosa María Chindoy" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Correo Electrónico (Para OTP y ventas) *</label>
+                    <input type="email" class="form-control" [(ngModel)]="artesano.email" placeholder="taller@artesano.com" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Años de Trayectoria Cultural *</label>
+                    <input type="number" class="form-control" [(ngModel)]="artesano.anosExperiencia" min="0" />
+                  </div>
+                  <div class="col-md-8">
+                    <label class="form-label small fw-semibold">Reconocimientos / Distinciones</label>
+                    <input type="text" class="form-control" [(ngModel)]="artesano.reconocimientosTexto" placeholder="Ej. Medalla a la Maestría Artesanal" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Departamento de Origen *</label>
+                    <select class="form-select" [(ngModel)]="artesano.departamento">
+                      @for (dep of departamentos; track dep) {
+                        <option [value]="dep">{{ dep }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Municipio o Resguardo *</label>
+                    <input type="text" class="form-control" [(ngModel)]="artesano.municipio" placeholder="Ej. Uribia, Ráquira..." />
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label small fw-semibold">Dirección del Taller / Comunidad *</label>
+                    <input type="text" class="form-control" [(ngModel)]="artesano.direccion" placeholder="Ranchería Jepirra o dirección del taller" />
+                  </div>
+                </div>
+              </div>
+            }
+
+            <div class="d-grid gap-2 mt-4 pt-2">
+              <button class="btn btn-nc-primary py-3 fs-6" (click)="enviarRegistro()" [disabled]="isLoading()">
+                @if (isLoading()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>Registrando en el servidor...
+                } @else {
+                  <i class="fa-solid fa-user-plus me-2"></i>Registrar Cuenta en Nexus Cultural
+                }
+              </button>
+            </div>
+
+            <div class="text-center mt-3 small text-muted">
+              ¿Ya tienes cuenta? 
+              <a routerLink="/login" class="text-terracota fw-bold text-decoration-none">Iniciar sesión con código OTP</a>
+            </div>
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>

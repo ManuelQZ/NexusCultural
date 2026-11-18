@@ -1,0 +1,60 @@
+.bg-terracota {
+  background-color: var(--nc-primary) !important;
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.bg-gold {
+  background-color: var(--nc-gold-bright) !important;
+}
+
+.bg-emerald {
+  background-color: var(--nc-emerald) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.max-w-500 {
+  max-width: 500px;
+}
+
+.role-card {
+  background-color: #ffffff;
+  border-color: var(--nc-border) !important;
+  transition: all 0.25s ease;
+}
+
+.role-card:hover {
+  border-color: var(--nc-primary) !important;
+  background-color: var(--nc-primary-bg);
+  transform: translateY(-2px);
+}
+
+.role-card.active {
+  border-color: var(--nc-primary) !important;
+  background-color: var(--nc-primary-bg);
+  box-shadow: 0 4px 12px rgba(153, 68, 34, 0.15);
+}
+
+.role-card.active .role-icon {
+  color: var(--nc-primary);
+}
+
+.role-icon {
+  color: var(--nc-gold);
+}
+
+.success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(30, 91, 79, 0.25);
+}
+

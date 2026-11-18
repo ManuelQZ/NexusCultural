@@ -11,7 +11,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const avisos = inject(NotificacionesService);
   const token = auth.getToken();
 
-  const peticion = token
+  // No enviar cabecera Authorization a los endpoints públicos de autenticación y registro
+  const esPublico = req.url.includes('/usuarios/solicitar') ||
+                    req.url.includes('/usuarios/verificar') ||
+                    (req.method === 'POST' && (req.url.includes('/compradores') || req.url.includes('/artesanos')));
+
+  const peticion = (token && !esPublico)
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : req;
 

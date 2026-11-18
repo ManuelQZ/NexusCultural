@@ -1,0 +1,21 @@
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+  @for (aviso of servicio.avisos(); track aviso.id) {
+    <div class="toast show align-items-center border-0 shadow-lg mb-2"
+         [class.bg-success]="aviso.tipo === 'exito'"
+         [class.bg-danger]="aviso.tipo === 'error'"
+         [class.bg-info]="aviso.tipo === 'info'"
+         role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex text-white p-2">
+        <div class="toast-body d-flex align-items-center gap-2">
+          <i class="fa-solid"
+             [class.fa-circle-check]="aviso.tipo === 'exito'"
+             [class.fa-triangle-exclamation]="aviso.tipo === 'error'"
+             [class.fa-circle-info]="aviso.tipo === 'info'"></i>
+          <span>{{ aviso.texto }}</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="servicio.quitar(aviso.id)"></button>
+      </div>
+    </div>
+  }
+</div>
+
