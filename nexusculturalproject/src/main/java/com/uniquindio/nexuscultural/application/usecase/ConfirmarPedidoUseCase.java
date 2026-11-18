@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Service
 public class ConfirmarPedidoUseCase {
-   /* private final PedidoRepository pedidoRepository;
+    private final PedidoRepository pedidoRepository;
 
     public ConfirmarPedidoUseCase(PedidoRepository pedidoRepository) {
         this.pedidoRepository = pedidoRepository;
@@ -25,5 +25,5 @@ public class ConfirmarPedidoUseCase {
 
         pedidoRepository.guardar(pedido);
         return pedido;
-    }*/
+    }
 }

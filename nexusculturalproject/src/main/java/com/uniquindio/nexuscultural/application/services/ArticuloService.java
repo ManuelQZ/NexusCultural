@@ -1,30 +1,39 @@
 package com.uniquindio.nexuscultural.application.services;
 
 import com.uniquindio.nexuscultural.application.dto.request.ActualizarInventarioRequest;
+import com.uniquindio.nexuscultural.application.dto.request.AplicarDescuentoRequest;
 import com.uniquindio.nexuscultural.application.dto.request.CrearArticuloRequest;
 import com.uniquindio.nexuscultural.application.dto.request.ReponerStockRequest;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.domain.exception.RecursoNoEncontradoException;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
 import com.uniquindio.nexuscultural.domain.repository.ArticuloRepository;
+import com.uniquindio.nexuscultural.domain.valueobject.Descuento;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Servicio de aplicación para la gestión del ciclo de vida de los artículos artesanales.
+ */
 @Service
 @Transactional
 public class ArticuloService {
-    private final ArticuloRepository articuloRepository;
 
-    public ArticuloService(ArticuloRepository articuloRepository) {
+    private final ArticuloRepository articuloRepository;
+    private final LogroService logroService;
+
+    public ArticuloService(ArticuloRepository articuloRepository, LogroService logroService) {
         this.articuloRepository = articuloRepository;
+        this.logroService = logroService;
     }
 
     /**
      * Publica un nuevo artículo en el catálogo.
      * Valida moderación (título ≥ 5 chars, descripción ≥ 50 chars) antes de crear.
+     * Evalúa logros de gamificación después de guardar.
      */
     public Articulo publicarArticulo(CrearArticuloRequest request) {
         // Moderación: validaciones de contenido antes de crear
@@ -47,6 +56,12 @@ public class ArticuloService {
         );
         Articulo guardado = articuloRepository.guardar(articulo);
 
+        // Gamificación: contar artículos del artesano y evaluar logros
+        try {
+            int totalArticulos = articuloRepository.listarPorArtesano(request.artesanoId()).size();
+            logroService.evaluarLogrosPublicacion(request.artesanoId(), totalArticulos);
+        } catch (Exception ignored) {}
+
         return guardado;
     }
 
@@ -54,6 +69,21 @@ public class ArticuloService {
         Articulo articulo = articuloRepository.buscarPorId(request.idArticulo())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Artículo no encontrado."));
         articulo.actualizarInventario(request.idArtesano(), request.cantidad(), request.motivo());
+        return articuloRepository.guardar(articulo);
+    }
+
+    public Articulo actualizarArticulo(UUID id, CrearArticuloRequest request) {
+        Articulo articulo = articuloRepository.buscarPorId(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Artículo no encontrado."));
+        articulo.actualizarDatos(
+                request.artesanoId(),
+                request.titulo(),
+                request.descripcion(),
+                request.precio(),
+                request.stock(),
+                request.grupo(),
+                request.imagenes()
+        );
         return articuloRepository.guardar(articulo);
     }
 
@@ -67,8 +97,8 @@ public class ArticuloService {
     public Articulo inactivarArticulo(UUID articuloId, UUID artesanoId) {
         Articulo articulo = articuloRepository.buscarPorId(articuloId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Artículo no encontrado."));
-        if (!articulo.getArtesanoId().equals(artesanoId)) {
-            throw new ReglaDominioException("Solo el artesano dueño puede inactivar el artículo.");
+        if (artesanoId != null && !articulo.getArtesanoId().equals(artesanoId)) {
+            throw new ReglaDominioException("Solo el artesano dueño o moderación puede inactivar el artículo.");
         }
         articulo.inactivar();
         return articuloRepository.guardar(articulo);
@@ -77,11 +107,53 @@ public class ArticuloService {
     public Articulo reactivarArticulo(UUID articuloId, UUID artesanoId) {
         Articulo articulo = articuloRepository.buscarPorId(articuloId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Artículo no encontrado."));
-        if (!articulo.getArtesanoId().equals(artesanoId)) {
-            throw new ReglaDominioException("Solo el artesano dueño puede reactivar el artículo.");
+        if (artesanoId != null && !articulo.getArtesanoId().equals(artesanoId)) {
+            throw new ReglaDominioException("Solo el artesano dueño o moderación puede reactivar el artículo.");
         }
         articulo.reactivar();
         return articuloRepository.guardar(articulo);
     }
 
+    /**
+     * Aplica un descuento porcentual a un artículo.
+     * Solo el artesano dueño puede aplicar el descuento.
+     */
+    public Articulo aplicarDescuento(UUID articuloId, AplicarDescuentoRequest request) {
+        Articulo articulo = articuloRepository.buscarPorId(articuloId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Artículo no encontrado."));
+        if (!articulo.getArtesanoId().equals(request.artesanoId())) {
+            throw new ReglaDominioException("Solo el artesano dueño puede aplicar un descuento.");
+        }
+        Descuento descuento = new Descuento(request.porcentaje(), request.motivo());
+        articulo.aplicarDescuento(descuento);
+        return articuloRepository.guardar(articulo);
+    }
+
+    /**
+     * Remueve el descuento activo de un artículo.
+     * Solo el artesano dueño puede remover el descuento.
+     */
+    public Articulo removerDescuento(UUID articuloId, UUID artesanoId) {
+        Articulo articulo = articuloRepository.buscarPorId(articuloId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Artículo no encontrado."));
+        if (!articulo.getArtesanoId().equals(artesanoId)) {
+            throw new ReglaDominioException("Solo el artesano dueño puede remover el descuento.");
+        }
+        articulo.removerDescuento();
+        return articuloRepository.guardar(articulo);
+    }
+
+    /**
+     * Elimina un artículo del catálogo del artesano (soft delete).
+     * Solo el artesano dueño puede eliminarlo.
+     */
+    public void eliminarArticulo(UUID articuloId, UUID artesanoId) {
+        Articulo articulo = articuloRepository.buscarPorId(articuloId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Artículo no encontrado."));
+        if (artesanoId != null && !articulo.getArtesanoId().equals(artesanoId)) {
+            throw new ReglaDominioException("Solo el artesano dueño puede eliminar el artículo.");
+        }
+        articulo.eliminar(false);
+        articuloRepository.guardar(articulo);
+    }
 }

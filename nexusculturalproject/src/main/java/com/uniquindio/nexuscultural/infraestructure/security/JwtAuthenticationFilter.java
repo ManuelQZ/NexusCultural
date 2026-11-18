@@ -23,8 +23,8 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SecretKey key;
 
-    // AHORA: Inyecta 'jwt.secret'
-    public JwtAuthenticationFilter(@Value("${jwt.secret}") String secret) {
+    public JwtAuthenticationFilter(
+            @Value("${jwt.secret:clave_secreta_de_prueba_para_tests_1234567890_abcdef}") String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -49,6 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (email != null && rol != null) {
                     var authority = new SimpleGrantedAuthority("ROLE_" + rol);
                     var authToken = new UsernamePasswordAuthenticationToken(email, null, List.of(authority));
+                    // El id del usuario viaja en el claim "id"; se deja en "details" para leerlo en los controllers
+                    authToken.setDetails(claims.get("id", String.class));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {

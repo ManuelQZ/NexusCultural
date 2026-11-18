@@ -45,4 +45,14 @@ public class AdministradorRepositoryEnMemoria implements AdministradorRepository
                 .filter(a -> a.getEmail().equals(email))
                 .findFirst();
     }
+
+    @Override
+    public java.util.List<Administrador> listarTodos() {
+        return new java.util.ArrayList<>(administradores.values());
+    }
+
+    @Override
+    public void eliminar(UUID id) {
+        administradores.remove(id);
+    }
 }

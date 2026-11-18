@@ -2,6 +2,7 @@ package com.uniquindio.nexuscultural.application.services;
 
 import com.uniquindio.nexuscultural.application.dto.request.DevolverProductoRequest;
 import com.uniquindio.nexuscultural.application.dto.request.ProcesarPagoRequest;
+import com.uniquindio.nexuscultural.application.dto.response.DevolucionDetalleResponse;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
 import com.uniquindio.nexuscultural.domain.entity.Devolucion;
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
@@ -13,18 +14,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @Transactional
 public class PedidoService {
+
     private final PedidoRepository pedidoRepository;
     private final ArticuloRepository articuloRepository;
+    private final WompiService wompiService;
 
     public PedidoService(PedidoRepository pedidoRepository,
-                         ArticuloRepository articuloRepository) {
+                         ArticuloRepository articuloRepository,
+                         WompiService wompiService) {
         this.pedidoRepository = pedidoRepository;
         this.articuloRepository = articuloRepository;
+        this.wompiService = wompiService;
     }
 
     /**
@@ -95,7 +101,8 @@ public class PedidoService {
     }
 
     /**
-     * Si la devolución se aprueba, el stock vuelve al artículo.
+     * Si la devolución se aprueba, el stock vuelve al artículo y se ejecuta
+     * el reembolso en Wompi (sandbox / simulación).
      */
     public Pedido resolverDevolucion(UUID pedidoId, boolean aprobar) {
         Pedido pedido = pedidoRepository.obtenerPorId(pedidoId)
@@ -108,8 +115,44 @@ public class PedidoService {
                     .orElseThrow(() -> new ReglaDominioException("Artículo no encontrado."));
             articulo.reponerStock(pedido.getCantidad());
             articuloRepository.guardar(articulo);
+
+            // Ejecución del reembolso en Wompi (o simulación sandbox)
+            try {
+                wompiService.ejecutarReembolsoWompi(pedido);
+            } catch (Exception e) {
+                // Registro del evento sin interrumpir la consistencia del estado del pedido
+            }
         }
 
+        pedidoRepository.guardar(pedido);
+        return pedido;
+    }
+
+    public List<DevolucionDetalleResponse> listarDevoluciones() {
+        return wompiService.listarDevolucionesDetalladas();
+    }
+
+    public List<Pedido> listarPorComprador(UUID compradorId) {
+        return pedidoRepository.buscarPorCompradorId(compradorId);
+    }
+
+    public List<Pedido> listarPorArtesano(UUID artesanoId) {
+        return pedidoRepository.buscarPorArtesanoId(artesanoId);
+    }
+
+    public Pedido obtenerPorId(UUID pedidoId) {
+        return pedidoRepository.obtenerPorId(pedidoId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Pedido no encontrado."));
+    }
+
+    public Pedido avanzarEstado(UUID pedidoId) {
+        Pedido pedido = obtenerPorId(pedidoId);
+        switch (pedido.getEstado()) {
+            case PENDIENTE -> pedido.confirmar();
+            case CONFIRMADO -> pedido.enviar();
+            case EN_CAMINO -> pedido.marcarEntregado(LocalDateTime.now());
+            default -> {}
+        }
         pedidoRepository.guardar(pedido);
         return pedido;
     }

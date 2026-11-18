@@ -6,6 +6,7 @@ import com.uniquindio.nexuscultural.application.usecase.DevolverProductoUseCase;
 import com.uniquindio.nexuscultural.application.usecase.ObtenerDevolucionPorPedidoUseCase;
 import com.uniquindio.nexuscultural.domain.entity.Devolucion;
 import com.uniquindio.nexuscultural.infraestructure.rest.mapper.DevolucionMapper;
+import com.uniquindio.nexuscultural.infraestructure.security.UsuarioActual;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/devoluciones")
@@ -28,9 +31,12 @@ public class DevolucionController {
         this.obtenerDevolucionUseCase = obtenerDevolucionUseCase;
         this.devolucionMapper = devolucionMapper;
     }
+
     @PostMapping
     public ResponseEntity<DevolucionResponse> solicitarReembolso(@Valid @RequestBody DevolverProductoRequest request) {
-        devolverProductoUseCase.ejecutar(request);
+        UUID yo = UsuarioActual.id().orElse(request.idComprador());
+        devolverProductoUseCase.ejecutar(new DevolverProductoRequest(
+                request.idPedido(), yo, request.motivo(), request.descripcionEstado()));
 
         Devolucion devolucion = obtenerDevolucionUseCase.ejecutar(request.idPedido());
 
