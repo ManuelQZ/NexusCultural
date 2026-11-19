@@ -1,0 +1,16 @@
+.bg-terracota {
+  background-color: var(--nc-primary) !important;
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.bg-gold {
+  background-color: var(--nc-gold-bright) !important;
+}
+
+.text-emerald {
+  color: var(--nc-emerald) !important;
+}
+

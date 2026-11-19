@@ -1,0 +1,38 @@
+.bg-terracota {
+  background-color: var(--nc-primary) !important;
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.bg-gold {
+  background-color: var(--nc-gold-bright) !important;
+}
+
+.text-gold {
+  color: var(--nc-gold) !important;
+}
+
+.card-img-wrapper {
+  height: 200px;
+  background-color: #f2ede6;
+}
+
+.obra-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+

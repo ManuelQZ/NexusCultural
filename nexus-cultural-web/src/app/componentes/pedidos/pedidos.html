@@ -3,7 +3,7 @@
     <div>
       <span class="badge bg-gold text-dark px-3 py-1 rounded-pill mb-2">Comprador Cultural • Mis Compras</span>
       <h1 class="font-serif fw-bold mb-1">Mis Pedidos y Trazabilidad de Envíos</h1>
-      <p class="text-muted small mb-0">Historial real de órdenes consultadas directamente desde el servidor AWS.</p>
+      <p class="text-muted small mb-0">Historial de piezas artesanales adquiridas con impacto directo en las comunidades colombianas.</p>
     </div>
     <div class="d-flex gap-2">
       <button class="btn btn-outline-secondary btn-sm" (click)="cargarHistorial()">
@@ -18,7 +18,7 @@
   @if (cargando()) {
     <div class="py-5 text-center">
       <div class="spinner-border text-terracota" role="status"></div>
-      <p class="text-muted small mt-2">Consultando tus compras en el servidor...</p>
+      <p class="text-muted small mt-2">Recuperando el historial de tus compras ancestrales...</p>
     </div>
   } @else if (pedidos().length === 0) {
     <!-- Estado Vacío -->
@@ -176,7 +176,7 @@
               <div class="text-center py-4">
                 <i class="fa-solid fa-circle-check text-emerald fs-1 mb-3"></i>
                 <h5 class="fw-bold font-serif">Solicitud Enviada con Éxito</h5>
-                <p class="small text-muted mb-0">La solicitud fue radicada en el backend de AWS para moderación.</p>
+                <p class="small text-muted mb-0">La solicitud fue radicada con el taller artesanal para su revisión y acompañamiento.</p>
               </div>
             } @else {
               <p class="small text-muted mb-3">
@@ -202,7 +202,7 @@
               <div class="d-grid gap-2 mt-4">
                 <button class="btn btn-nc-primary py-2" (click)="enviarDevolucion()" [disabled]="enviandoDevolucion()">
                   @if (enviandoDevolucion()) {
-                    <span class="spinner-border spinner-border-sm me-2"></span>Radicando en el servidor...
+                    <span class="spinner-border spinner-border-sm me-2"></span>Radicando con el taller artesanal...
                   } @else {
                     Radicar Solicitud de Devolución
                   }

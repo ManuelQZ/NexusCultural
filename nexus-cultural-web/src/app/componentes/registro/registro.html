@@ -7,9 +7,9 @@
           <div class="success-icon mb-3 mx-auto bg-emerald text-white">
             <i class="fa-solid fa-check fs-2"></i>
           </div>
-          <h2 class="font-serif fw-bold text-terracota mb-2">¡Registro Exitoso!</h2>
+          <h2 class="font-serif fw-bold text-terracota mb-2">¡Te damos la bienvenida!</h2>
           <p class="text-muted mb-4 max-w-500 mx-auto">
-            Tu cuenta ha sido creada exitosamente en el servidor de Nexus Cultural como <strong>{{ rolSeleccionado() }}</strong>. Ya puedes ingresar solicitando tu código OTP.
+            Tu cuenta ha sido creada exitosamente en la comunidad de Nexus Cultural como <strong>{{ rolSeleccionado() }}</strong>. Ya puedes ingresar solicitando tu código de acceso.
           </p>
           <div class="d-flex justify-content-center gap-3">
             <a routerLink="/login" class="btn btn-nc-primary px-4">
@@ -158,7 +158,7 @@
             <div class="d-grid gap-2 mt-4 pt-2">
               <button class="btn btn-nc-primary py-3 fs-6" (click)="enviarRegistro()" [disabled]="isLoading()">
                 @if (isLoading()) {
-                  <span class="spinner-border spinner-border-sm me-2"></span>Registrando en el servidor...
+                  <span class="spinner-border spinner-border-sm me-2"></span>Registrando tu cuenta en la comunidad...
                 } @else {
                   <i class="fa-solid fa-user-plus me-2"></i>Registrar Cuenta en Nexus Cultural
                 }

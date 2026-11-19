@@ -1,0 +1,277 @@
+<div class="container my-5">
+  <!-- ENCABEZADO DEL ARTESANO -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <span class="badge bg-gold text-dark px-3 py-1 rounded-pill mb-2">Panel del Maestro Artesano</span>
+      <h1 class="font-serif fw-bold mb-1">Mi Taller y Obras Ancestrales</h1>
+      <p class="text-muted small mb-0">
+        Bienvenido, <strong>{{ authService.currentName() || 'Maestro Artesano' }}</strong>. Administra tu catálogo y registra nuevas creaciones.
+      </p>
+    </div>
+
+    <!-- Pestañas de Navegación del Artesano -->
+    <div class="btn-group shadow-sm">
+      <button class="btn btn-sm"
+              [class.btn-nc-primary]="pestana() === 'MIS_OBRAS'"
+              [class.btn-outline-secondary]="pestana() !== 'MIS_OBRAS'"
+              (click)="cambiarPestana('MIS_OBRAS')">
+        <i class="fa-solid fa-shapes me-1"></i>Mis Obras ({{ misObras().length }})
+      </button>
+      <button class="btn btn-sm"
+              [class.btn-nc-primary]="pestana() === 'NUEVA_OBRA'"
+              [class.btn-outline-secondary]="pestana() !== 'NUEVA_OBRA'"
+              (click)="cambiarPestana('NUEVA_OBRA')">
+        <i class="fa-solid fa-plus-circle me-1 text-gold"></i>Cargar Artesanía
+      </button>
+      <button class="btn btn-sm"
+              [class.btn-nc-primary]="pestana() === 'PEDIDOS_TALLER'"
+              [class.btn-outline-secondary]="pestana() !== 'PEDIDOS_TALLER'"
+              (click)="cambiarPestana('PEDIDOS_TALLER')">
+        <i class="fa-solid fa-receipt me-1"></i>Ventas del Taller
+      </button>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 1: MIS OBRAS -->
+  @if (pestana() === 'MIS_OBRAS') {
+    <div class="row g-4">
+      @if (cargando()) {
+        <div class="col-12 py-5 text-center">
+          <div class="spinner-border text-terracota" role="status"></div>
+          <p class="text-muted small mt-2">Trayendo las creaciones de tu taller artesanal...</p>
+        </div>
+      } @else {
+        @for (obra of misObras(); track obra.id) {
+          <div class="col-md-6 col-xl-4">
+            <div class="card nc-card h-100 position-relative shadow-sm">
+              <div class="card-img-wrapper position-relative overflow-hidden">
+                <img [src]="obra.imagenes && obra.imagenes.length > 0 ? obra.imagenes[0] : 'assets/images/logo.png'"
+                     [alt]="obra.titulo" class="card-img-top obra-thumb" />
+                <span class="position-absolute top-0 start-0 m-2 nc-badge-gold">
+                  {{ obra.grupo }}
+                </span>
+                <span class="position-absolute top-0 end-0 m-2 badge"
+                      [class.bg-success]="obra.estado === 'ACTIVO'"
+                      [class.bg-secondary]="obra.estado !== 'ACTIVO'">
+                  {{ obra.estado }}
+                </span>
+              </div>
+
+              <div class="card-body p-3 d-flex flex-column">
+                <h5 class="font-serif fw-bold mb-1 text-dark">{{ obra.titulo }}</h5>
+                <p class="small text-muted mb-2 text-truncate-2">{{ obra.descripcion }}</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded-3 small">
+                  <div>
+                    <span class="text-muted d-block" style="font-size: 0.72rem;">STOCK ACTUAL</span>
+                    <strong class="text-dark fs-6">{{ obra.stock }} uds.</strong>
+                  </div>
+                  <div class="text-end">
+                    <span class="text-muted d-block" style="font-size: 0.72rem;">PRECIO</span>
+                    <strong class="text-terracota fs-6">${{ obra.montoPrecio | number:'1.0-0' }} COP</strong>
+                  </div>
+                </div>
+
+                <!-- Acciones del Artesano -->
+                <div class="mt-auto d-flex gap-2 pt-2 border-top">
+                  <button class="btn btn-outline-secondary btn-sm flex-fill" (click)="reponerStock(obra.id)">
+                    <i class="fa-solid fa-boxes-stacked me-1"></i>Reponer Stock
+                  </button>
+                  @if (obra.estado === 'ACTIVO') {
+                    <button class="btn btn-outline-warning btn-sm" (click)="inactivarObra(obra.id)" title="Pausar venta">
+                      <i class="fa-solid fa-pause"></i>
+                    </button>
+                  } @else {
+                    <button class="btn btn-outline-success btn-sm" (click)="reactivarObra(obra.id)" title="Reactivar">
+                      <i class="fa-solid fa-play"></i>
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="col-12 py-5 text-center">
+            <i class="fa-solid fa-hands-holding-child fs-1 text-muted mb-3"></i>
+            <h4 class="font-serif">No tienes obras registradas aún</h4>
+            <p class="text-muted small">Comienza publicando tu primera pieza artesanal para que esté disponible en el catálogo.</p>
+            <button class="btn btn-nc-primary" (click)="cambiarPestana('NUEVA_OBRA')">
+              <i class="fa-solid fa-plus-circle me-1"></i>Publicar mi Primera Artesanía
+            </button>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- PESTAÑA 2: CARGAR NUEVA ARTESANÍA (UI-8) -->
+  @if (pestana() === 'NUEVA_OBRA') {
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card nc-card p-4 p-md-5 shadow-sm border-0">
+          <div class="border-bottom pb-3 mb-4">
+            <span class="nc-badge-emerald mb-2 d-inline-block"><i class="fa-solid fa-seedling me-1"></i>Saberes Ancestrales y Comercio Justo</span>
+            <h3 class="font-serif fw-bold text-terracota mb-1">Cargar Nueva Pieza Artesanal</h3>
+            <p class="text-muted small mb-0">Completa la información de tu obra para publicarla en el catálogo oficial.</p>
+          </div>
+
+          <form [formGroup]="publicarForm" (ngSubmit)="publicarArticulo()">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label small fw-semibold">Título de la Obra *</label>
+                <input type="text" class="form-control" formControlName="titulo"
+                       [class.is-invalid]="publicarForm.get('titulo')?.invalid && publicarForm.get('titulo')?.touched"
+                       placeholder="Ej. Mochila Wayuu Susu Tradicional" />
+                @if (publicarForm.get('titulo')?.invalid && publicarForm.get('titulo')?.touched) {
+                  <div class="invalid-feedback small">El título debe tener al menos 5 caracteres.</div>
+                }
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Grupo / Categoría *</label>
+                <select class="form-select" formControlName="grupo">
+                  @for (g of grupos; track g) {
+                    <option [value]="g">{{ g }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label small fw-semibold mb-0">Historia, Simbolismo y Técnica Empleada *</label>
+                  <small class="text-muted" [class.text-danger]="(publicarForm.get('descripcion')?.value?.length || 0) < 50" [class.text-success]="(publicarForm.get('descripcion')?.value?.length || 0) >= 50">
+                    {{ publicarForm.get('descripcion')?.value?.length || 0 }} / 50 caracteres mínimos
+                  </small>
+                </div>
+                <textarea class="form-control" rows="4" formControlName="descripcion"
+                          [class.is-invalid]="publicarForm.get('descripcion')?.invalid && publicarForm.get('descripcion')?.touched"
+                          placeholder="Describe con detalle cómo elaboraste esta pieza, los saberes ancestrales aplicados y su valor cultural (mínimo 50 caracteres)..."></textarea>
+                @if (publicarForm.get('descripcion')?.invalid && publicarForm.get('descripcion')?.touched) {
+                  <div class="invalid-feedback small">La historia debe tener al menos 50 caracteres para honrar el saber ancestral de tu pieza.</div>
+                }
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Precio de Venta (COP) *</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control fw-bold text-terracota" formControlName="precioMonto" min="1000" step="5000" />
+                  <span class="input-group-text">COP</span>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Stock Inicial de Unidades *</label>
+                <input type="number" class="form-control" formControlName="stock" min="1" />
+              </div>
+
+              <!-- CARGA DE FOTOGRAFÍAS A AWS S3 -->
+              <div class="col-12 mt-4">
+                <label class="form-label small fw-semibold d-block">
+                  <i class="fa-solid fa-camera text-terracota me-1"></i>Fotografías de la Pieza (Mínimo 2 requeridas)
+                </label>
+
+                <div class="p-4 rounded-3 border border-2 border-dashed bg-light text-center mb-3">
+                  <input type="file" id="fileInput" class="d-none" accept="image/*" (change)="onFileSelected($event)" />
+                  <label for="fileInput" class="btn btn-outline-secondary btn-sm mb-2 cursor-pointer">
+                    <i class="fa-solid fa-cloud-arrow-up me-1 text-terracota"></i>Subir fotografía de tu creación
+                  </label>
+                  <p class="small text-muted mb-0">Formatos permitidos: JPG, PNG o WEBP.</p>
+
+                  @if (subiendoImagen()) {
+                    <div class="mt-2 text-terracota small">
+                      <span class="spinner-border spinner-border-sm me-1"></span>Guardando tu fotografía para mostrarla al mundo...
+                    </div>
+                  }
+                </div>
+
+                <!-- Lista de imágenes cargadas -->
+                @if (imagenesCargadas().length > 0) {
+                  <div class="d-flex flex-wrap gap-2 mb-3">
+                    @for (img of imagenesCargadas(); track $index) {
+                      <div class="position-relative border rounded-2 p-1 bg-white">
+                        <img [src]="img" class="rounded-1" style="width: 70px; height: 70px; object-fit: cover;" />
+                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 p-0 rounded-circle"
+                                style="width: 20px; height: 20px; font-size: 10px;"
+                                (click)="quitarImagen($index)">×</button>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- URLs alternativas directas -->
+                <div class="row g-2">
+                  <div class="col-md-6">
+                    <input type="url" class="form-control form-control-sm" formControlName="imagenUrl1"
+                           placeholder="O pega enlace de fotografía 1..." />
+                  </div>
+                  <div class="col-md-6">
+                    <input type="url" class="form-control form-control-sm" formControlName="imagenUrl2"
+                           placeholder="O pega enlace de fotografía 2..." />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+              <button type="button" class="btn btn-outline-secondary" (click)="cambiarPestana('MIS_OBRAS')">Cancelar</button>
+              <button type="submit" class="btn btn-nc-primary px-4 py-2" [disabled]="publicarForm.invalid || cargando()">
+                @if (cargando()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>Mostrando tus creaciones al mundo...
+                } @else {
+                  <i class="fa-solid fa-paper-plane me-2"></i>Publicar Artesanía en el Catálogo
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- PESTAÑA 3: VENTAS Y PEDIDOS DEL TALLER -->
+  @if (pestana() === 'PEDIDOS_TALLER') {
+    <div class="card nc-card p-4 shadow-sm">
+      <h5 class="font-serif fw-bold mb-3"><i class="fa-solid fa-receipt text-terracota me-2"></i>Pedidos de Obras Vendidas</h5>
+      @if (misPedidos().length > 0) {
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead class="table-light small text-muted text-uppercase">
+              <tr>
+                <th>ID Pedido</th>
+                <th>Cantidad</th>
+                <th>Total Venta</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of misPedidos(); track p.id) {
+                <tr>
+                  <td class="font-monospace small fw-bold text-terracota">{{ p.id }}</td>
+                  <td>{{ p.cantidad }} uds.</td>
+                  <td class="fw-bold">${{ p.total | number:'1.0-0' }} {{ p.moneda }}</td>
+                  <td>
+                    <span class="badge"
+                          [class.bg-warning]="p.estado === 'PENDIENTE'"
+                          [class.bg-info]="p.estado === 'CONFIRMADO'"
+                          [class.bg-primary]="p.estado === 'EN_CAMINO'"
+                          [class.bg-success]="p.estado === 'ENTREGADO'">
+                      {{ p.estado }}
+                    </span>
+                  </td>
+                  <td class="small text-muted">{{ p.fechaCreacion || 'Reciente' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="py-5 text-center text-muted">
+          <i class="fa-solid fa-clipboard-list fs-2 mb-2"></i>
+          <p class="mb-0">Aún no registras pedidos para tus obras publicadas.</p>
+        </div>
+      }
+    </div>
+  }
+</div>
+

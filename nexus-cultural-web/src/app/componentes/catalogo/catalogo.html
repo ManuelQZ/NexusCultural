@@ -4,7 +4,7 @@
     <div>
       <span class="badge bg-gold text-dark px-3 py-1 rounded-pill mb-2">Comprador Cultural • Catálogo Oficial</span>
       <h1 class="font-serif fw-bold mb-1">Obras Artesanales Disponibles</h1>
-      <p class="text-muted small mb-0">Piezas tradicionales colombianas leídas directamente desde el servidor AWS.</p>
+      <p class="text-muted small mb-0">Piezas tradicionales colombianas creadas en el corazón de nuestras comunidades y territorios.</p>
     </div>
 
     <!-- Buscador -->
@@ -59,7 +59,7 @@
     <div class="col-lg-9">
       <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 border mb-4">
         <span class="small text-muted">
-          Mostrando <strong>{{ articulosOrdenados.length }}</strong> piezas en el servidor
+          Mostrando <strong>{{ articulosOrdenados.length }}</strong> creaciones ancestrales de nuestros territorios
         </span>
 
         <div class="d-flex align-items-center gap-2">
@@ -75,7 +75,7 @@
       @if (cargando()) {
         <div class="py-5 text-center">
           <div class="spinner-border text-terracota" role="status"></div>
-          <p class="text-muted small mt-2">Consultando catálogo en AWS CloudFront...</p>
+          <p class="text-muted small mt-2">Explorando piezas artesanales del territorio colombiano...</p>
         </div>
       } @else {
         <div class="row g-4">

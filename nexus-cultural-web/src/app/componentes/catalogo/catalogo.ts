@@ -65,7 +65,7 @@ export class Catalogo implements OnInit {
       },
       error: () => {
         this.cargando.set(false);
-        this.notificaciones.error('No se pudo conectar con el catálogo en AWS.');
+        this.notificaciones.error('No se pudo conectar con el catálogo artesanal.');
       }
     });
   }
@@ -90,7 +90,7 @@ export class Catalogo implements OnInit {
       },
       error: () => {
         this.cargando.set(false);
-        this.notificaciones.error('Error al realizar la búsqueda en el servidor.');
+        this.notificaciones.error('No se pudo completar la búsqueda en el catálogo.');
       }
     });
   }

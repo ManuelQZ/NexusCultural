@@ -1,0 +1,248 @@
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      @if (publicacionExitosa()) {
+        <!-- PANTALLA: OBRA PUBLICADA (UI-8d) -->
+        <div class="card nc-card p-5 text-center shadow-sm">
+          <div class="success-badge mx-auto bg-emerald text-white mb-3">
+            <i class="fa-solid fa-check fs-2"></i>
+          </div>
+          <span class="badge bg-gold text-dark px-3 py-1 rounded-pill mb-2 mx-auto">UI-8d • Confirmación</span>
+          <h2 class="font-serif fw-bold text-terracota mb-2">¡Tu Obra Artesanal ha sido Publicada!</h2>
+          <p class="text-muted max-w-600 mx-auto mb-4">
+            La obra <strong>"{{ obra.titulo }}"</strong> ya se encuentra visible en el Catálogo de Nexus Cultural con su certificación de autenticidad. Los compradores ya pueden descubrir tu historia y adquirir tu trabajo.
+          </p>
+
+          <div class="p-3 bg-natural-light rounded-4 border max-w-500 mx-auto mb-4 text-start">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-muted small">Precio al público:</span>
+              <strong class="text-terracota">${{ obra.precio | number:'1.0-0' }} COP</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-muted small">Stock inicial:</span>
+              <strong class="text-dark">{{ obra.stock }} unidades</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted small">Técnica:</span>
+              <span class="text-dark small">{{ obra.tecnica }}</span>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center gap-3">
+            <a routerLink="/catalogo" class="btn btn-nc-primary px-4">
+              <i class="fa-solid fa-store me-2"></i>Ver en el Catálogo
+            </a>
+            <button class="btn btn-outline-secondary" (click)="reiniciar()">
+              Publicar otra obra
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- FLUJO DE CREACIÓN DE PRODUCTO (UI-8, UI-9, UI-8c) -->
+        <div class="card nc-card shadow-sm border-0">
+          <div class="card-header bg-terracota text-white py-4 px-4 px-md-5">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="badge bg-gold text-dark px-3 py-1 rounded-pill mb-2">Panel del Maestro Artesano</span>
+                <h3 class="font-serif fw-bold mb-0">Publicar Nueva Obra de Arte</h3>
+              </div>
+              <span class="fs-5 text-white-50 font-serif">Paso {{ pasoActual() }} de 3</span>
+            </div>
+          </div>
+
+          <!-- Barra de Progreso en Pasos -->
+          <div class="bg-light border-bottom p-3 px-md-5 d-flex justify-content-around small">
+            <button class="step-nav-btn btn btn-sm p-0 d-flex align-items-center gap-1"
+                    [class.fw-bold]="pasoActual() === 1"
+                    [class.text-terracota]="pasoActual() >= 1"
+                    (click)="irAPaso(1)">
+              <span class="step-circle" [class.active]="pasoActual() === 1">1</span>
+              <span>Datos e Historia (UI-8)</span>
+            </button>
+            <span class="text-muted">→</span>
+            <button class="step-nav-btn btn btn-sm p-0 d-flex align-items-center gap-1"
+                    [class.fw-bold]="pasoActual() === 2"
+                    [class.text-terracota]="pasoActual() >= 2"
+                    (click)="irAPaso(2)">
+              <span class="step-circle" [class.active]="pasoActual() === 2">2</span>
+              <span>Fotografías (UI-9)</span>
+            </button>
+            <span class="text-muted">→</span>
+            <button class="step-nav-btn btn btn-sm p-0 d-flex align-items-center gap-1"
+                    [class.fw-bold]="pasoActual() === 3"
+                    [class.text-terracota]="pasoActual() === 3"
+                    (click)="irAPaso(3)">
+              <span class="step-circle" [class.active]="pasoActual() === 3">3</span>
+              <span>Precio y Stock (UI-8c)</span>
+            </button>
+          </div>
+
+          <div class="card-body p-4 p-md-5">
+            <!-- PASO 1: DETALLES E HISTORIA CULTURAL (UI-8) -->
+            @if (pasoActual() === 1) {
+              <div>
+                <h5 class="font-serif fw-bold text-terracota mb-3">
+                  <i class="fa-solid fa-scroll me-2"></i>1. Identidad y Significado de la Pieza
+                </h5>
+                <div class="row g-3">
+                  <div class="col-md-8">
+                    <label class="form-label small fw-semibold">Título o Nombre de la Obra</label>
+                    <input type="text" class="form-control" [(ngModel)]="obra.titulo" placeholder="Ej. Vasija de Barro de Ráquira" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Categoría Ancestral</label>
+                    <select class="form-select" [(ngModel)]="obra.categoria">
+                      <option value="CERAMICA">Cerámica y Barro</option>
+                      <option value="TEJIDOS">Tejeduría y Fibras</option>
+                      <option value="JOYERIA">Orfebrería y Filigrana</option>
+                      <option value="MADERA">Talla en Madera</option>
+                      <option value="BISUTERIA">Mostacilla y Semillas</option>
+                    </select>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label small fw-semibold">Técnica Ancestral Empleada</label>
+                    <input type="text" class="form-control" [(ngModel)]="obra.tecnica" placeholder="Ej. Moldeado en espiral bruñido con piedra de río" />
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label small fw-semibold">Historia y Simbolismo Cultural</label>
+                    <textarea class="form-control" rows="4" [(ngModel)]="obra.historia"
+                              placeholder="Describe el significado espiritual, cultural o familiar detrás de esta pieza..."></textarea>
+                    <div class="form-text small">Esta historia será leída por los compradores y estará disponible en audio accesible.</div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Materiales Naturales</label>
+                    <input type="text" class="form-control" [(ngModel)]="obra.materiales" placeholder="Ej. Arcilla roja, tintes de nogal" />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Dimensiones</label>
+                    <input type="text" class="form-control" [(ngModel)]="obra.dimensiones" placeholder="Ej. 30 x 20 cm" />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Peso Aproximado</label>
+                    <input type="text" class="form-control" [(ngModel)]="obra.peso" placeholder="Ej. 850 gr" />
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                  <button class="btn btn-nc-primary px-4" (click)="irAPaso(2)">
+                    Continuar a Fotografías <i class="fa-solid fa-arrow-right ms-2"></i>
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- PASO 2: SUBIDA DE FOTOS MULTIMEDIA (UI-9) -->
+            @if (pasoActual() === 2) {
+              <div>
+                <h5 class="font-serif fw-bold text-terracota mb-3">
+                  <i class="fa-solid fa-camera me-2"></i>2. Fotografías de la Obra y del Taller
+                </h5>
+                <p class="text-muted small">
+                  Sube al menos 2 imágenes claras: una de la pieza completa y otra del detalle del oficio tradicional, para mostrar tu legado al mundo.
+                </p>
+
+                <!-- Zona de Carga / Drag & Drop -->
+                <div class="upload-dropzone p-5 text-center rounded-4 border border-2 border-dashed mb-4 cursor-pointer"
+                     (click)="simularSubidaImagen()">
+                  <i class="fa-solid fa-cloud-arrow-up fs-1 text-terracota mb-2"></i>
+                  <h6 class="fw-bold mb-1">Haz clic para cargar fotos de la pieza</h6>
+                  <p class="small text-muted mb-0">Formatos permitidos: JPG, PNG o WEBP (Máx. 5MB por foto)</p>
+                </div>
+
+                <!-- Grilla de Imágenes Cargadas -->
+                <div class="row g-3 mb-4">
+                  @for (img of imagenesSubidas(); track $index) {
+                    <div class="col-sm-4 col-6">
+                      <div class="position-relative uploaded-card rounded-3 overflow-hidden border">
+                        <img [src]="img" alt="Foto cargada" class="img-fluid w-100" style="height: 140px; object-fit: cover;" />
+                        <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle"
+                                (click)="eliminarImagen($index)" title="Eliminar">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                        <span class="position-absolute bottom-0 start-0 m-2 badge bg-dark bg-opacity-75 small">
+                          Foto {{ $index + 1 }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                  <button class="btn btn-outline-secondary" (click)="irAPaso(1)">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Atrás
+                  </button>
+                  <button class="btn btn-nc-primary px-4" (click)="irAPaso(3)">
+                    Continuar a Precio y Stock <i class="fa-solid fa-arrow-right ms-2"></i>
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- PASO 3: PRECIO, STOCK Y PUBLICACIÓN (UI-8c) -->
+            @if (pasoActual() === 3) {
+              <div>
+                <h5 class="font-serif fw-bold text-terracota mb-3">
+                  <i class="fa-solid fa-tags me-2"></i>3. Fijación de Precio y Disponibilidad
+                </h5>
+
+                <div class="row g-4 mb-4">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Precio de Venta Sugerido (COP)</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-white">$</span>
+                      <input type="number" class="form-control form-control-lg fw-bold text-terracota"
+                             [(ngModel)]="obra.precio" step="5000" />
+                      <span class="input-group-text bg-white">COP</span>
+                    </div>
+                    <div class="form-text small">Valor total que pagará el comprador en la pasarela.</div>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Stock Inmediato</label>
+                    <input type="number" class="form-control form-control-lg text-center"
+                           [(ngModel)]="obra.stock" min="1" />
+                  </div>
+
+                  <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Tiempo de Elaboración</label>
+                    <input type="text" class="form-control form-control-lg text-center"
+                           [(ngModel)]="obra.tiempoElaboracion" />
+                  </div>
+                </div>
+
+                <!-- Resumen de Transparencia de Pagos -->
+                <div class="p-4 rounded-4 bg-natural-light border mb-4">
+                  <h6 class="fw-bold text-dark font-serif mb-2">
+                    <i class="fa-solid fa-scale-balanced text-gold me-2"></i>Transparencia de Comercio Justo
+                  </h6>
+                  <p class="small text-muted mb-2">
+                    Nexus Cultural no cobra suscripciones mensuales. Tras la venta, recibirás tu pago directamente vía Wompi Bancolombia.
+                  </p>
+                  <div class="d-flex justify-content-between small border-top pt-2">
+                    <span>Monto neto transferido al artesano:</span>
+                    <strong class="text-emerald fs-6">${{ obra.precio * 0.94 | number:'1.0-0' }} COP (94%)</strong>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                  <button class="btn btn-outline-secondary" (click)="irAPaso(2)">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Atrás
+                  </button>
+                  <button class="btn btn-nc-primary py-2 px-4 fs-6" (click)="publicarObra()">
+                    <i class="fa-solid fa-paper-plane me-2"></i>Publicar Obra en el Catálogo
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>
+

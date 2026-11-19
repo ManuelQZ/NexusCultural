@@ -70,11 +70,11 @@ export class Login {
         error: (err) => {
           this.isLoading.set(false);
           this.esError.set(true);
-          console.error('Error al solicitar OTP:', err);
+          console.error('Error al solicitar código:', err);
           if (err.status === 0) {
-            this.mensaje.set('No se pudo conectar con el servidor (bloqueo CORS o sin conexión). Si usas npm start, reinicia el servidor para cargar el proxy.');
+            this.mensaje.set('No se pudo conectar con la plataforma cultural. Por favor verifica tu conexión a internet.');
           } else {
-            this.mensaje.set(err.error?.mensaje || err.error?.message || `Error del servidor (${err.status}): Verifica el correo ingresado.`);
+            this.mensaje.set(err.error?.mensaje || err.error?.message || 'No fue posible enviar el código. Verifica el correo ingresado.');
           }
         }
       });
@@ -120,11 +120,11 @@ export class Login {
         error: (err) => {
           this.isLoading.set(false);
           this.esError.set(true);
-          console.error('Error al verificar OTP:', err);
+          console.error('Error al verificar código:', err);
           if (err.status === 0) {
-            this.mensaje.set('No se pudo conectar con el servidor (bloqueo CORS o sin conexión).');
+            this.mensaje.set('No se pudo conectar con la plataforma cultural. Intenta nuevamente.');
           } else {
-            this.mensaje.set(err.error?.mensaje || err.error?.message || `Código OTP inválido o expirado (${err.status}).`);
+            this.mensaje.set(err.error?.mensaje || err.error?.message || 'Código de acceso temporal incorrecto o expirado.');
           }
         }
       });
