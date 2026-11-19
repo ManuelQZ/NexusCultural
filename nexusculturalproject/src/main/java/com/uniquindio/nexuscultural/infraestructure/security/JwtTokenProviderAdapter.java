@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,34 +15,44 @@ import java.util.UUID;
 public class JwtTokenProviderAdapter {
 
     private final SecretKey key;
-    private final long expirationInMinutes;
+    private final long expirationInMs = 86400000; // 24 horas
 
     public JwtTokenProviderAdapter(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.expiry:60}") long expirationInMinutes) {
+            @Value("${jwt.secret:clave_secreta_de_prueba_para_tests_1234567890_abcdef}") String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.expirationInMinutes = expirationInMinutes;
     }
 
     public AuthTokenResponse generarToken(UUID usuarioId, String email, String rol) {
-        Instant ahora = Instant.now();
-        Instant expiracion = ahora.plusSeconds(expirationInMinutes * 60);
+        return generarToken(usuarioId, email, rol, null, null);
+    }
 
-        // PAYLOAD: Datos contenidos en el token (lo que en el backend de referencia llaman "lo que dice la manilla")
-        String token = Jwts.builder()
+    public AuthTokenResponse generarToken(UUID usuarioId, String email, String rol, String nivelAcceso) {
+        return generarToken(usuarioId, email, rol, nivelAcceso, null);
+    }
+
+    public AuthTokenResponse generarToken(UUID usuarioId, String email, String rol, String nivelAcceso, String nombre) {
+        Date ahora = new Date();
+        Date expiracion = new Date(ahora.getTime() + expirationInMs);
+
+        var builder = Jwts.builder()
                 .subject(email)
                 .claim("id", usuarioId.toString())
-                .claim("rol", rol)
-                .issuedAt(Date.from(ahora))
-                .expiration(Date.from(expiracion))
+                .claim("rol", rol);
+
+        if (nivelAcceso != null) {
+            builder.claim("nivelAcceso", nivelAcceso);
+        }
+
+        if (nombre != null && !nombre.isBlank()) {
+            builder.claim("nombre", nombre);
+        }
+
+        String token = builder
+                .issuedAt(ahora)
+                .expiration(expiracion)
                 .signWith(key)
                 .compact();
 
-        return new AuthTokenResponse(
-                token,
-                "Bearer",
-                rol,
-                expirationInMinutes * 60
-        );
+        return new AuthTokenResponse(token, "Bearer", rol, nivelAcceso, nombre, expirationInMs / 1000);
     }
 }

@@ -1,0 +1,18 @@
+# Variables de entorno y secretos
+.env
+.env.*
+*.env
+*.env.local
+
+# Claves de Firebase y AWS
+*firebase-key*.json
+*accessKeys*.csv
+*.csv
+
+# Build y dependencias
+.gradle/
+build/
+node_modules/
+dist/
+.idea/
+.vscode/
