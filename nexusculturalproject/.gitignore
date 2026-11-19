@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+.env
+src/main/resources/firebase-key-nexus-cultural-sevicio-correo.json
+src/main/resources/nexus-backend-service_accessKeys.csv
+

@@ -1,0 +1,60 @@
+.bg-terracota {
+  background-color: var(--nc-primary) !important;
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.bg-gold {
+  background-color: var(--nc-gold-bright) !important;
+}
+
+.bg-emerald {
+  background-color: var(--nc-emerald) !important;
+}
+
+.text-gold {
+  color: var(--nc-gold) !important;
+}
+
+.bg-natural-light {
+  background-color: var(--nc-bg);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.max-w-400 {
+  max-width: 400px;
+}
+
+.payment-card {
+  background-color: #ffffff;
+  border-color: var(--nc-border) !important;
+  transition: all 0.2s ease;
+}
+
+.payment-card:hover {
+  border-color: var(--nc-primary) !important;
+  background-color: var(--nc-primary-bg);
+  transform: translateY(-2px);
+}
+
+.payment-card.active {
+  border-color: var(--nc-primary) !important;
+  background-color: var(--nc-primary-bg);
+  box-shadow: 0 4px 12px rgba(153, 68, 34, 0.15);
+}
+
+.success-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(30, 91, 79, 0.25);
+}
+

@@ -1,0 +1,34 @@
+.bg-gold {
+  background-color: var(--nc-gold-bright) !important;
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.text-gold {
+  color: var(--nc-gold) !important;
+}
+
+.text-emerald {
+  color: var(--nc-emerald) !important;
+}
+
+.bg-natural-light {
+  background-color: var(--nc-bg);
+}
+
+.cart-item-img {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+}
+
+.quantity-control {
+  width: 105px;
+}
+
+.max-w-500 {
+  max-width: 500px;
+}
+
