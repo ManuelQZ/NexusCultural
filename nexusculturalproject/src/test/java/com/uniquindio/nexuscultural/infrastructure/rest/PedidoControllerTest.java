@@ -2,8 +2,7 @@ package com.uniquindio.nexuscultural.infrastructure.rest;
 
 import com.uniquindio.nexuscultural.application.dto.response.PedidoDetalleResponse;
 import com.uniquindio.nexuscultural.application.services.PedidoService;
-import com.uniquindio.nexuscultural.application.usecase.CancelarPedidoPendienteUseCase;
-import com.uniquindio.nexuscultural.application.usecase.CrearPedidoUseCase;
+import com.uniquindio.nexuscultural.application.usecase.*;
 import com.uniquindio.nexuscultural.domain.entity.Pedido;
 import com.uniquindio.nexuscultural.domain.exception.RecursoNoEncontradoException;
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -49,6 +48,9 @@ class PedidoControllerTest {
     @MockitoBean private PedidoService pedidoService;
     @MockitoBean private PedidoMapper pedidoMapper;
     @MockitoBean private PedidoRepository pedidoRepository;
+    @MockitoBean private EnviarPedidoUseCase enviarPedidoUseCase;
+    @MockitoBean private EntregarPedidoUseCase entregarPedidoUseCase;
+    @MockitoBean private ListarPedidosUseCase listarPedidosUseCase;
 
     @Test
     @DisplayName("Punto 4.1: Recurso no encontrado responde 404 y NUNCA guarda")
