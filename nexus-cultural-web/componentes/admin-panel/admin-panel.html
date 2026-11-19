@@ -1,0 +1,244 @@
+<div class="container my-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <span class="badge bg-gold text-dark px-3 py-1 rounded-pill mb-2">Módulo de Seguridad Institucional</span>
+      <h1 class="font-serif fw-bold mb-1">Panel de Administración de Nexus Cultural</h1>
+      <p class="text-muted small mb-0">Gestión de administradores internos, moderación del catálogo y resolución de garantías.</p>
+    </div>
+
+    <!-- Pestañas de Navegación del Administrador -->
+    <div class="btn-group shadow-sm">
+      <button class="btn btn-sm"
+              [class.btn-nc-primary]="pestana() === 'ADMINS'"
+              [class.btn-outline-secondary]="pestana() !== 'ADMINS'"
+              (click)="cambiarPestana('ADMINS')">
+        <i class="fa-solid fa-users-gear me-1"></i>Administradores ({{ administradores().length }})
+      </button>
+      <button class="btn btn-sm"
+              [class.btn-nc-primary]="pestana() === 'MODERACION'"
+              [class.btn-outline-secondary]="pestana() !== 'MODERACION'"
+              (click)="cambiarPestana('MODERACION')">
+        <i class="fa-solid fa-shield me-1"></i>Moderar Obras ({{ todasLasObras().length }})
+      </button>
+      <button class="btn btn-sm"
+              [class.btn-nc-primary]="pestana() === 'DEVOLUCIONES'"
+              [class.btn-outline-secondary]="pestana() !== 'DEVOLUCIONES'"
+              (click)="cambiarPestana('DEVOLUCIONES')">
+        <i class="fa-solid fa-rotate-left me-1"></i>Devoluciones ({{ devoluciones().length }})
+      </button>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 1: GESTIÓN DE ADMINISTRADORES (REGISTRO INTERNO) -->
+  @if (pestana() === 'ADMINS') {
+    <div class="row g-4">
+      <!-- Columna Izquierda: Formulario para ingresar administrador internamente -->
+      <div class="col-lg-5">
+        <div class="card nc-card p-4 shadow-sm border-0">
+          <h5 class="font-serif fw-bold text-terracota mb-3">
+            <i class="fa-solid fa-user-plus me-2"></i>Registrar Administrador Interno
+          </h5>
+          <p class="small text-muted mb-3">
+            Por seguridad, los administradores solo pueden ser registrados por otro administrador autenticado en el sistema.
+          </p>
+
+          <form (ngSubmit)="registrarNuevoAdmin()">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Nombre Completo *</label>
+              <input type="text" class="form-control" [(ngModel)]="nuevoAdmin.nombreCompleto" name="nombre"
+                     placeholder="Ej. Dra. Martha Lucía Gómez" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Correo Electrónico Institucional *</label>
+              <input type="email" class="form-control" [(ngModel)]="nuevoAdmin.email" name="email"
+                     placeholder="admin@uniquindio.edu.co" required />
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label small fw-semibold">Nivel de Acceso *</label>
+              <select class="form-select" [(ngModel)]="nuevoAdmin.nivelAcceso" name="nivel">
+                <option value="SUPER_ADMIN">SUPER_ADMIN (Control Total)</option>
+                <option value="GESTOR_CULTURAL">GESTOR_CULTURAL (Moderación y Devoluciones)</option>
+                <option value="AUDITOR">AUDITOR (Solo Lectura y Reportes)</option>
+              </select>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-nc-primary py-2">
+                <i class="fa-solid fa-shield-check me-2"></i>Crear Cuenta Administrativa
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Lista de Administradores Registrados -->
+      <div class="col-lg-7">
+        <div class="card nc-card p-4 shadow-sm">
+          <h5 class="font-serif fw-bold mb-3">Administradores Activos en el Servidor</h5>
+
+          @if (cargando()) {
+            <div class="py-4 text-center">
+              <div class="spinner-border text-terracota" role="status"></div>
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead class="table-light small text-muted text-uppercase">
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Nivel</th>
+                    <th class="text-end">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (admin of administradores(); track admin.id) {
+                    <tr>
+                      <td class="fw-bold text-dark">{{ admin.nombreCompleto }}</td>
+                      <td class="small text-muted">{{ admin.email }}</td>
+                      <td>
+                        <span class="badge bg-gold text-dark">{{ admin.nivelAcceso }}</span>
+                      </td>
+                      <td class="text-end">
+                        <button class="btn btn-outline-danger btn-sm" (click)="eliminarAdmin(admin.id)" title="Revocar acceso">
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="4" class="text-center py-4 text-muted">
+                        No hay administradores adicionales registrados.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- PESTAÑA 2: MODERACIÓN DEL CATÁLOGO -->
+  @if (pestana() === 'MODERACION') {
+    <div class="card nc-card p-4 shadow-sm">
+      <h5 class="font-serif fw-bold mb-3"><i class="fa-solid fa-shapes text-terracota me-2"></i>Todas las Obras del Ecosistema</h5>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="table-light small text-muted text-uppercase">
+            <tr>
+              <th>Pieza</th>
+              <th>Grupo</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th class="text-end">Moderación</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (obra of todasLasObras(); track obra.id) {
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img [src]="obra.imagenes && obra.imagenes.length > 0 ? obra.imagenes[0] : 'assets/images/logo.png'"
+                         class="rounded-2" style="width: 44px; height: 44px; object-fit: cover;" />
+                    <div>
+                      <div class="fw-bold font-serif text-dark">{{ obra.titulo }}</div>
+                      <small class="text-muted">ID: {{ obra.id }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge bg-light text-dark border">{{ obra.grupo }}</span></td>
+                <td class="fw-bold">${{ obra.montoPrecio | number:'1.0-0' }} COP</td>
+                <td>{{ obra.stock }}</td>
+                <td>
+                  <span class="badge" [class.bg-success]="obra.estado === 'ACTIVO'" [class.bg-secondary]="obra.estado !== 'ACTIVO'">
+                    {{ obra.estado }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  @if (obra.estado === 'ACTIVO') {
+                    <button class="btn btn-outline-warning btn-sm" (click)="inactivarObra(obra.id)">
+                      <i class="fa-solid fa-ban me-1"></i>Inactivar
+                    </button>
+                  } @else {
+                    <button class="btn btn-outline-success btn-sm" (click)="reactivarObra(obra.id)">
+                      <i class="fa-solid fa-check me-1"></i>Reactivar
+                    </button>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center py-4 text-muted">No hay obras registradas en el catálogo.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- PESTAÑA 3: RESOLUCIÓN DE DEVOLUCIONES -->
+  @if (pestana() === 'DEVOLUCIONES') {
+    <div class="card nc-card p-4 shadow-sm">
+      <h5 class="font-serif fw-bold mb-3"><i class="fa-solid fa-scale-balanced text-terracota me-2"></i>Solicitudes de Devolución por Garantía</h5>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="table-light small text-muted text-uppercase">
+            <tr>
+              <th>ID Pedido</th>
+              <th>Comprador</th>
+              <th>Motivo Declarado</th>
+              <th>Estado</th>
+              <th class="text-end">Decisión de Auditoría</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (dev of devoluciones(); track dev.id) {
+              <tr>
+                <td class="font-monospace small fw-bold text-terracota">{{ dev.pedidoId }}</td>
+                <td class="small">{{ dev.compradorId }}</td>
+                <td class="small text-muted">{{ dev.motivo }}</td>
+                <td>
+                  <span class="badge"
+                        [class.bg-warning]="dev.estado === 'PENDIENTE'"
+                        [class.bg-success]="dev.estado === 'APROBADA'"
+                        [class.bg-danger]="dev.estado === 'RECHAZADA'">
+                    {{ dev.estado }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  @if (dev.estado === 'PENDIENTE') {
+                    <div class="btn-group btn-group-sm">
+                      <button class="btn btn-success" (click)="resolverDevolucion(dev.pedidoId, true)">
+                        <i class="fa-solid fa-check me-1"></i>Aprobar
+                      </button>
+                      <button class="btn btn-danger" (click)="resolverDevolucion(dev.pedidoId, false)">
+                        <i class="fa-solid fa-xmark me-1"></i>Rechazar
+                      </button>
+                    </div>
+                  } @else {
+                    <small class="text-muted">Resuelto</small>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center py-4 text-muted">
+                  <i class="fa-solid fa-shield-check fs-2 text-emerald d-block mb-2"></i>
+                  No hay solicitudes de devolución pendientes de resolución.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
+

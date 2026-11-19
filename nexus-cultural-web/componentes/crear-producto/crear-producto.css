@@ -1,0 +1,79 @@
+.bg-terracota {
+  background-color: var(--nc-primary) !important;
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.bg-gold {
+  background-color: var(--nc-gold-bright) !important;
+}
+
+.bg-emerald {
+  background-color: var(--nc-emerald) !important;
+}
+
+.text-emerald {
+  color: var(--nc-emerald) !important;
+}
+
+.bg-natural-light {
+  background-color: var(--nc-bg);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.max-w-600 {
+  max-width: 600px;
+}
+
+.max-w-500 {
+  max-width: 500px;
+}
+
+.step-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #d8cec4;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.step-circle.active {
+  background-color: var(--nc-primary);
+}
+
+.step-nav-btn {
+  background: transparent;
+  border: none;
+}
+
+.upload-dropzone {
+  background-color: var(--nc-bg);
+  border-color: var(--nc-border) !important;
+  transition: all 0.2s ease;
+}
+
+.upload-dropzone:hover {
+  background-color: #f5ede4;
+  border-color: var(--nc-primary) !important;
+}
+
+.success-badge {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(30, 91, 79, 0.25);
+}
+
