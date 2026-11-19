@@ -43,7 +43,7 @@ export class CrearProducto {
       ...imgs,
       'https://images.unsplash.com/photo-1590736969955-71cc94801759?auto=format&fit=crop&w=600&q=80'
     ]);
-    this.notificaciones.exito('Fotografía cargada correctamente (Almacenamiento S3)');
+    this.notificaciones.exito('Fotografía de la obra agregada con éxito.');
   }
 
   eliminarImagen(index: number): void {

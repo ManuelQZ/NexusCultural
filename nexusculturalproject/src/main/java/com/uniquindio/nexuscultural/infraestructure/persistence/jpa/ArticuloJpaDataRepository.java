@@ -13,9 +13,16 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ArticuloJpaDataRepository extends JpaRepository<ArticuloEntity, UUID> {
+
     List<ArticuloEntity> findByArtesanoId(UUID artesanoId);
 
     List<ArticuloEntity> findByEstado(EstadoArticulo estado);
+
+    List<ArticuloEntity> findByTituloContainingIgnoreCaseAndEstado(String titulo, EstadoArticulo estado);
+
+    List<ArticuloEntity> findByGrupoAndEstado(Grupo grupo, EstadoArticulo estado);
+
+    List<ArticuloEntity> findAllByOrderByFechaPublicacionDesc();
 
     @Query("""
             SELECT a FROM ArticuloEntity a
@@ -28,7 +35,4 @@ public interface ArticuloJpaDataRepository extends JpaRepository<ArticuloEntity,
                                 @Param("grupo") Grupo grupo,
                                 @Param("excluido") EstadoArticulo excluido,
                                 Pageable pageable);
-
-
-
 }

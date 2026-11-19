@@ -80,7 +80,7 @@ export class Registro {
         },
         error: (err) => {
           this.isLoading.set(false);
-          this.mensajeError.set(err.error?.mensaje || 'Error al registrar comprador en el servidor.');
+          this.mensajeError.set(err.error?.mensaje || 'No se pudo completar el registro en la plataforma.');
         }
       });
     } else {
@@ -113,7 +113,7 @@ export class Registro {
         },
         error: (err) => {
           this.isLoading.set(false);
-          this.mensajeError.set(err.error?.mensaje || 'Error al registrar artesano en el servidor.');
+          this.mensajeError.set(err.error?.mensaje || 'No se pudo completar el registro del maestro artesano.');
         }
       });
     }

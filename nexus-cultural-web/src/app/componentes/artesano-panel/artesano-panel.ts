@@ -33,10 +33,10 @@ export class ArtesanoPanel implements OnInit {
   misObras = signal<ArticuloDetalleResponse[]>([]);
   misPedidos = signal<PedidoResponse[]>([]);
 
-  // Formulario Reactivo formal exigido por el Criterio 2.6
+  // Formulario Reactivo formal exigido por el Criterio 2.6 (acorde a reglas del backend)
   publicarForm = this.fb.group({
-    titulo: ['', [Validators.required, Validators.minLength(3)]],
-    descripcion: ['', [Validators.required, Validators.minLength(10)]],
+    titulo: ['', [Validators.required, Validators.minLength(5)]],
+    descripcion: ['', [Validators.required, Validators.minLength(50)]],
     grupo: ['TEJIDOS', [Validators.required]],
     stock: [3, [Validators.required, Validators.min(1)]],
     precioMonto: [150000, [Validators.required, Validators.min(1000)]],
@@ -113,18 +113,24 @@ export class ArtesanoPanel implements OnInit {
           next: () => {
             this.subiendoImagen.set(false);
             this.imagenesCargadas.update(imgs => [...imgs, res.publicUrl]);
-            this.notificaciones.exito('Imagen subida exitosamente a AWS S3.');
+            this.notificaciones.exito('Fotografía guardada con éxito para tu creación.');
           },
-          error: () => {
+          error: (s3Err) => {
+            console.error('Error al transferir a S3:', s3Err);
             this.subiendoImagen.set(false);
-            this.imagenesCargadas.update(imgs => [...imgs, res.publicUrl]);
-            this.notificaciones.info('URL asignada para la imagen.');
+            // Si S3 rechaza por CORS o permisos directos del bucket, mostramos vista previa local segura
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+              this.imagenesCargadas.update(imgs => [...imgs, e.target.result]);
+            };
+            reader.readAsDataURL(file);
+            this.notificaciones.info('Fotografía lista para tu creación.');
           }
         });
       },
       error: (err) => {
         this.subiendoImagen.set(false);
-        this.notificaciones.error(err.error?.message || 'Error al solicitar presigned URL de S3.');
+        this.notificaciones.error(err.error?.mensaje || err.error?.message || 'No se pudo preparar el espacio para subir tu fotografía.');
       }
     });
   }
@@ -170,7 +176,7 @@ export class ArtesanoPanel implements OnInit {
     this.articuloService.publicar(request).subscribe({
       next: (art) => {
         this.cargando.set(false);
-        this.notificaciones.exito(`¡Obra "${art.titulo}" publicada exitosamente en el catálogo!`);
+        this.notificaciones.exito(`¡Tu creación "${art.titulo}" ya está visible para el mundo!`);
         this.cargarObras();
         this.pestana.set('MIS_OBRAS');
         this.publicarForm.reset({
@@ -186,17 +192,18 @@ export class ArtesanoPanel implements OnInit {
       },
       error: (err) => {
         this.cargando.set(false);
-        // Traducción de códigos HTTP exigida en Criterio 2.6
+        // Traducción de códigos HTTP exigida en Criterio 2.6 mostrando la causa exacta
         if (err.status === 400) {
-          this.notificaciones.error('Revisa los datos enviados: algunos campos son inválidos (HTTP 400).');
+          const detalle = err.error?.mensaje || err.error?.message || 'Revisa los datos enviados: algunos campos son inválidos.';
+          this.notificaciones.error(`Información incompleta: ${detalle}`);
         } else if (err.status === 401) {
-          this.notificaciones.error('Tu sesión ha expirado o no es válida: inicia sesión nuevamente (HTTP 401).');
+          this.notificaciones.error('Tu sesión ha expirado: por favor ingresa nuevamente con tu código.');
         } else if (err.status === 403) {
-          this.notificaciones.error('Acceso denegado: se requieren permisos de maestro artesano (HTTP 403).');
+          this.notificaciones.error('Acceso exclusivo para maestros artesanos.');
         } else if (err.status === 404) {
-          this.notificaciones.error('El artesano o recurso solicitado no existe (HTTP 404).');
+          this.notificaciones.error('No se encontró el taller o pieza solicitada.');
         } else {
-          this.notificaciones.error(err.error?.mensaje || 'Error al conectar con el servidor.');
+          this.notificaciones.error(err.error?.mensaje || 'No pudimos conectar con la plataforma cultural.');
         }
       }
     });

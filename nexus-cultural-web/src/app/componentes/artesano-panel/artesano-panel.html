@@ -38,7 +38,7 @@
       @if (cargando()) {
         <div class="col-12 py-5 text-center">
           <div class="spinner-border text-terracota" role="status"></div>
-          <p class="text-muted small mt-2">Cargando tus obras desde el servidor de AWS...</p>
+          <p class="text-muted small mt-2">Trayendo las creaciones de tu taller artesanal...</p>
         </div>
       } @else {
         @for (obra of misObras(); track obra.id) {
@@ -110,7 +110,7 @@
       <div class="col-lg-8">
         <div class="card nc-card p-4 p-md-5 shadow-sm border-0">
           <div class="border-bottom pb-3 mb-4">
-            <span class="nc-badge-emerald mb-2 d-inline-block">Conexión con AWS S3 y Spring Boot</span>
+            <span class="nc-badge-emerald mb-2 d-inline-block"><i class="fa-solid fa-seedling me-1"></i>Saberes Ancestrales y Comercio Justo</span>
             <h3 class="font-serif fw-bold text-terracota mb-1">Cargar Nueva Pieza Artesanal</h3>
             <p class="text-muted small mb-0">Completa la información de tu obra para publicarla en el catálogo oficial.</p>
           </div>
@@ -123,7 +123,7 @@
                        [class.is-invalid]="publicarForm.get('titulo')?.invalid && publicarForm.get('titulo')?.touched"
                        placeholder="Ej. Mochila Wayuu Susu Tradicional" />
                 @if (publicarForm.get('titulo')?.invalid && publicarForm.get('titulo')?.touched) {
-                  <div class="invalid-feedback small">El título debe tener al menos 3 caracteres.</div>
+                  <div class="invalid-feedback small">El título debe tener al menos 5 caracteres.</div>
                 }
               </div>
               <div class="col-md-4">
@@ -136,12 +136,17 @@
               </div>
 
               <div class="col-12">
-                <label class="form-label small fw-semibold">Historia, Simbolismo y Técnica Empleada *</label>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label small fw-semibold mb-0">Historia, Simbolismo y Técnica Empleada *</label>
+                  <small class="text-muted" [class.text-danger]="(publicarForm.get('descripcion')?.value?.length || 0) < 50" [class.text-success]="(publicarForm.get('descripcion')?.value?.length || 0) >= 50">
+                    {{ publicarForm.get('descripcion')?.value?.length || 0 }} / 50 caracteres mínimos
+                  </small>
+                </div>
                 <textarea class="form-control" rows="4" formControlName="descripcion"
                           [class.is-invalid]="publicarForm.get('descripcion')?.invalid && publicarForm.get('descripcion')?.touched"
-                          placeholder="Describe cómo elaboraste esta pieza, los saberes tradicionales aplicados y el significado cultural..."></textarea>
+                          placeholder="Describe con detalle cómo elaboraste esta pieza, los saberes ancestrales aplicados y su valor cultural (mínimo 50 caracteres)..."></textarea>
                 @if (publicarForm.get('descripcion')?.invalid && publicarForm.get('descripcion')?.touched) {
-                  <div class="invalid-feedback small">La descripción debe tener al menos 10 caracteres.</div>
+                  <div class="invalid-feedback small">La historia debe tener al menos 50 caracteres para honrar el saber ancestral de tu pieza.</div>
                 }
               </div>
 
@@ -168,13 +173,13 @@
                 <div class="p-4 rounded-3 border border-2 border-dashed bg-light text-center mb-3">
                   <input type="file" id="fileInput" class="d-none" accept="image/*" (change)="onFileSelected($event)" />
                   <label for="fileInput" class="btn btn-outline-secondary btn-sm mb-2 cursor-pointer">
-                    <i class="fa-solid fa-cloud-arrow-up me-1 text-terracota"></i>Subir foto desde mi dispositivo a AWS S3
+                    <i class="fa-solid fa-cloud-arrow-up me-1 text-terracota"></i>Subir fotografía de tu creación
                   </label>
                   <p class="small text-muted mb-0">Formatos permitidos: JPG, PNG o WEBP.</p>
 
                   @if (subiendoImagen()) {
                     <div class="mt-2 text-terracota small">
-                      <span class="spinner-border spinner-border-sm me-1"></span>Subiendo a S3 mediante presigned URL...
+                      <span class="spinner-border spinner-border-sm me-1"></span>Guardando tu fotografía para mostrarla al mundo...
                     </div>
                   }
                 </div>
@@ -197,11 +202,11 @@
                 <div class="row g-2">
                   <div class="col-md-6">
                     <input type="url" class="form-control form-control-sm" formControlName="imagenUrl1"
-                           placeholder="O pega URL de foto 1 (ej. S3 / web)..." />
+                           placeholder="O pega enlace de fotografía 1..." />
                   </div>
                   <div class="col-md-6">
                     <input type="url" class="form-control form-control-sm" formControlName="imagenUrl2"
-                           placeholder="O pega URL de foto 2..." />
+                           placeholder="O pega enlace de fotografía 2..." />
                   </div>
                 </div>
               </div>
@@ -211,7 +216,7 @@
               <button type="button" class="btn btn-outline-secondary" (click)="cambiarPestana('MIS_OBRAS')">Cancelar</button>
               <button type="submit" class="btn btn-nc-primary px-4 py-2" [disabled]="publicarForm.invalid || cargando()">
                 @if (cargando()) {
-                  <span class="spinner-border spinner-border-sm me-2"></span>Publicando en el servidor...
+                  <span class="spinner-border spinner-border-sm me-2"></span>Mostrando tus creaciones al mundo...
                 } @else {
                   <i class="fa-solid fa-paper-plane me-2"></i>Publicar Artesanía en el Catálogo
                 }

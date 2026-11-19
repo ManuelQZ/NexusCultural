@@ -123,7 +123,7 @@ export class Checkout implements OnInit {
 
         if (!pedidoPrincipal) {
           this.procesandoPago.set(false);
-          this.notificaciones.error('No se pudo inicializar la orden en el servidor.');
+          this.notificaciones.error('No se pudo inicializar tu orden de compra.');
           return;
         }
 
@@ -207,7 +207,7 @@ export class Checkout implements OnInit {
       },
       error: () => {
         this.procesandoPago.set(false);
-        this.notificaciones.error('Hubo un inconveniente al crear los pedidos en el servidor.');
+        this.notificaciones.error('Hubo un inconveniente al registrar tus pedidos. Intenta nuevamente.');
       }
     });
   }
