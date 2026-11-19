@@ -1,0 +1,13 @@
+{
+  "/api": {
+    "target": "https://d3gt0752ebjv7t.cloudfront.net",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "headers": {
+      "Origin": "https://d3gt0752ebjv7t.cloudfront.net",
+      "Referer": "https://d3gt0752ebjv7t.cloudfront.net/"
+    }
+  }
+}
+

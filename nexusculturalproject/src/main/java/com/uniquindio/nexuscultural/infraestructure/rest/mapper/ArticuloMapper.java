@@ -3,35 +3,20 @@ package com.uniquindio.nexuscultural.infraestructure.rest.mapper;
 import com.uniquindio.nexuscultural.application.dto.response.ArticuloDetalleResponse;
 import com.uniquindio.nexuscultural.application.dto.response.PaginaResponse;
 import com.uniquindio.nexuscultural.domain.entity.Articulo;
+import com.uniquindio.nexuscultural.domain.valueobject.EstadoArticulo;
+import com.uniquindio.nexuscultural.domain.valueobject.Grupo;
 import com.uniquindio.nexuscultural.domain.valueobject.Pagina;
-import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.ArtesanoJpaDataRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.uniquindio.nexuscultural.domain.valueobject.Precio;
+import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.entity.ArticuloEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ArticuloMapper {
-
-    private final ArtesanoJpaDataRepository artesanoRepository;
-
-    public ArticuloMapper(@Autowired(required = false) ArtesanoJpaDataRepository artesanoRepository) {
-        this.artesanoRepository = artesanoRepository;
-    }
 
     public ArticuloDetalleResponse toResponse(Articulo domain) {
         if (domain == null) return null;
-
-        String departamento = null;
-        String municipio = null;
-        if (domain.getArtesanoId() != null && artesanoRepository != null) {
-            try {
-                var artesanoOpt = artesanoRepository.findById(domain.getArtesanoId());
-                if (artesanoOpt.isPresent()) {
-                    departamento = artesanoOpt.get().getDepartamento();
-                    municipio = artesanoOpt.get().getMunicipio();
-                }
-            } catch (Exception ignored) {
-            }
-        }
 
         return new ArticuloDetalleResponse(
                 domain.getId() != null ? domain.getId().toString() : null,
@@ -45,15 +30,9 @@ public class ArticuloMapper {
                 domain.getEstado() != null ? domain.getEstado().name() : null,
                 domain.getGrupo() != null ? domain.getGrupo().name() : null,
                 domain.getImagenes(),
-                domain.getFechaPublicacion(),
-                domain.getPrecioConDescuento() != null && domain.getPrecioConDescuento().monto() != null
-                        ? domain.getPrecioConDescuento().monto().doubleValue() : null,
-                domain.getDescuento() != null ? domain.getDescuento().porcentaje() : null,
-                departamento,
-                municipio
+                domain.getFechaPublicacion()
         );
     }
-
     public PaginaResponse<ArticuloDetalleResponse> toPaginaResponse(Pagina<Articulo> pagina) {
         return new PaginaResponse<>(
                 pagina.contenido().stream().map(this::toResponse).toList(),

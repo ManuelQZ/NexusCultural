@@ -1,0 +1,81 @@
+.top-bar {
+  background-color: var(--nc-primary-dark);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.text-gold {
+  color: var(--nc-gold-bright) !important;
+}
+
+.bg-terracota {
+  background-color: var(--nc-primary) !important;
+  color: #ffffff;
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.nc-navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--nc-border);
+}
+
+.nc-logo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-title {
+  font-size: 1.25rem;
+  color: var(--nc-text-primary);
+  line-height: 1.1;
+}
+
+.brand-subtitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-link {
+  color: var(--nc-text-secondary);
+  font-weight: 500;
+  font-size: 0.93rem;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--nc-primary);
+  background-color: var(--nc-primary-bg);
+}
+
+.nav-link.active {
+  color: var(--nc-primary) !important;
+  font-weight: 700;
+  background-color: var(--nc-primary-bg);
+}
+
+.btn-cart {
+  color: var(--nc-text-primary);
+  border: 1px solid var(--nc-border);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background-color: var(--nc-surface-card);
+}
+
+.btn-cart:hover {
+  background-color: var(--nc-primary-bg);
+  color: var(--nc-primary);
+  border-color: var(--nc-primary);
+}
+

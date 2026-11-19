@@ -1,7 +1,6 @@
 package com.uniquindio.nexuscultural.domain.entity;
 
 import com.uniquindio.nexuscultural.domain.exception.ReglaDominioException;
-import com.uniquindio.nexuscultural.domain.valueobject.Descuento;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoArticulo;
 import com.uniquindio.nexuscultural.domain.valueobject.EstadoDevolucion;
 import com.uniquindio.nexuscultural.domain.valueobject.Grupo;
@@ -20,17 +19,15 @@ public class Articulo {
 
     private final UUID id;
     private final UUID artesanoId;          // referencia por ID, no por objeto
+    private final Grupo grupo;
     private final LocalDateTime fechaPublicacion;
-
-    private Grupo grupo;
-    private List<String> imagenes;          // el dominio solo conoce referencias (URLs/keys)
+    private final List<String> imagenes;    // el dominio solo conoce referencias (URLs/keys)
 
     private String titulo;
     private String descripcion;
     private int stock;
     private EstadoArticulo estado;
     private Precio precio;
-    private Descuento descuento;
 
     private Articulo(UUID id, UUID artesanoId, String titulo, String descripcion,
                      int stock, EstadoArticulo estado, Grupo grupo, List<String> imagenes,
@@ -164,9 +161,6 @@ public class Articulo {
         if (estado == EstadoArticulo.ELIMINADO) {
             throw new ReglaDominioException("No se puede actualizar el inventario de un artículo eliminado.");
         }
-        if (estado == EstadoArticulo.INACTIVO) {
-            throw new ReglaDominioException("El artículo está inactivo o bloqueado por moderación y no puede ser modificado.");
-        }
         if (nuevaCantidad < 0) {
             throw new ReglaDominioException("La cantidad no puede ser negativa.");
         }
@@ -197,7 +191,6 @@ public class Articulo {
         }
         this.descripcion = nuevaDescripcion;
     }
-
     public void actualizarHistoria(UUID solicitanteId, String nuevaHistoria) {
         if (!artesanoId.equals(solicitanteId)) {
             throw new ReglaDominioException("Solo el artesano dueño del artículo puede actualizar su historia.");
@@ -207,64 +200,6 @@ public class Articulo {
         }
         actualizarDescripcion(nuevaHistoria);
     }
-
-    public void actualizarDatos(UUID solicitanteId, String nuevoTitulo, String nuevaDescripcion, Precio nuevoPrecio, int nuevoStock, Grupo nuevoGrupo, List<String> nuevasImagenes) {
-        if (!artesanoId.equals(solicitanteId)) {
-            throw new ReglaDominioException("Solo el artesano dueño del artículo puede actualizar sus datos.");
-        }
-        if (estado == EstadoArticulo.ELIMINADO) {
-            throw new ReglaDominioException("No se puede actualizar un artículo eliminado.");
-        }
-        if (estado == EstadoArticulo.INACTIVO) {
-            throw new ReglaDominioException("El artículo está inactivo o bloqueado por moderación y no puede ser modificado.");
-        }
-        if (nuevoTitulo != null && !nuevoTitulo.isBlank()) {
-            this.titulo = nuevoTitulo;
-        }
-        if (nuevaDescripcion != null && !nuevaDescripcion.isBlank()) {
-            this.descripcion = nuevaDescripcion;
-        }
-        if (nuevoPrecio != null) {
-            this.precio = nuevoPrecio;
-        }
-        if (nuevoStock >= 0) {
-            this.stock = nuevoStock;
-            if (estado != EstadoArticulo.INACTIVO) {
-                estado = (nuevoStock > 0) ? EstadoArticulo.DISPONIBLE : EstadoArticulo.AGOTADO;
-            }
-        }
-        if (nuevoGrupo != null) {
-            this.grupo = nuevoGrupo;
-        }
-        if (nuevasImagenes != null && !nuevasImagenes.isEmpty()) {
-            this.imagenes = new ArrayList<>(nuevasImagenes);
-        }
-    }
-
-    /** Aplica un descuento al artículo. El artículo no debe estar eliminado. */
-    public void aplicarDescuento(Descuento descuento) {
-        if (estado == EstadoArticulo.ELIMINADO) {
-            throw new ReglaDominioException("No se puede aplicar descuento a un artículo eliminado.");
-        }
-        if (descuento == null) throw new ReglaDominioException("El descuento no puede ser nulo.");
-        this.descuento = descuento;
-    }
-
-    /** Remueve el descuento activo del artículo. */
-    public void removerDescuento() {
-        this.descuento = null;
-    }
-
-    /**
-     * Retorna el precio con descuento aplicado si existe uno activo,
-     * o el precio base en caso contrario.
-     */
-    public Precio getPrecioConDescuento() {
-        if (descuento == null) return precio;
-        return descuento.aplicar(precio);
-    }
-
-    public Descuento getDescuento() { return descuento; }
 
     @Override
     public boolean equals(Object o) {

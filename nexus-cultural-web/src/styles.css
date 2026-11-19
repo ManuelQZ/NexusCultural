@@ -1,0 +1,220 @@
+/* ==========================================================================
+   NEXUS CULTURAL — SISTEMA DE DISEÑO Y PALETA ARTESANAL COLOMBIANA
+   ========================================================================== */
+
+:root {
+  /* Identidad Primaria: Terracota / Cuero Artesanal */
+  --nc-primary: #994422;
+  --nc-primary-hover: #7e3619;
+  --nc-primary-dark: #5c2d0c;
+  --nc-primary-light: #b85c38;
+  --nc-primary-bg: #fdf5f0;
+
+  /* Oro Precolombino (Acento de valor) */
+  --nc-gold: #c07d33;
+  --nc-gold-bright: #d4af37;
+  --nc-gold-hover: #a86c28;
+  --nc-gold-bg: #fef9ed;
+
+  /* Selva Colombiana / Verde Protección / Comercio Justo */
+  --nc-emerald: #1e5b4f;
+  --nc-emerald-hover: #154239;
+  --nc-emerald-light: #3b6753;
+  --nc-emerald-bg: #edf5f2;
+
+  /* Superficies y Fondos Naturales */
+  --nc-bg: #faf7f2;
+  --nc-surface: #ffffff;
+  --nc-surface-card: #fffdfa;
+  --nc-surface-dim: #f3ece4;
+
+  /* Tipografía y Contraste (Legibilidad para adultos mayores) */
+  --nc-text-primary: #241912;
+  --nc-text-secondary: #55433c;
+  --nc-text-muted: #8c786e;
+  --nc-border: #e6dec8;
+  --nc-border-light: #f2ede1;
+
+  /* Tipografías */
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+   Configuraciones Base
+   -------------------------------------------------------------------------- */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--nc-bg);
+  color: var(--nc-text-primary);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-serif);
+  color: var(--nc-text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* --------------------------------------------------------------------------
+   Botones Personalizados de Nexus Cultural
+   -------------------------------------------------------------------------- */
+.btn-nc-primary {
+  background-color: var(--nc-primary);
+  color: #ffffff;
+  border: 1px solid var(--nc-primary);
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-in-out;
+}
+.btn-nc-primary:hover, .btn-nc-primary:focus {
+  background-color: var(--nc-primary-hover);
+  border-color: var(--nc-primary-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(153, 68, 34, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-nc-gold {
+  background-color: var(--nc-gold);
+  color: #ffffff;
+  border: 1px solid var(--nc-gold);
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-in-out;
+}
+.btn-nc-gold:hover {
+  background-color: var(--nc-gold-hover);
+  border-color: var(--nc-gold-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(192, 125, 51, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-nc-emerald {
+  background-color: var(--nc-emerald);
+  color: #ffffff;
+  border: 1px solid var(--nc-emerald);
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-in-out;
+}
+.btn-nc-emerald:hover {
+  background-color: var(--nc-emerald-hover);
+  border-color: var(--nc-emerald-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(30, 91, 79, 0.25);
+}
+
+.btn-nc-outline {
+  background-color: transparent;
+  color: var(--nc-primary);
+  border: 1.5px solid var(--nc-primary);
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-in-out;
+}
+.btn-nc-outline:hover {
+  background-color: var(--nc-primary);
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Tarjetas con Estilo Artesanal
+   -------------------------------------------------------------------------- */
+.nc-card {
+  background-color: var(--nc-surface-card);
+  border: 1px solid var(--nc-border);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(36, 25, 18, 0.04);
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+.nc-card:hover {
+  box-shadow: 0 8px 24px rgba(36, 25, 18, 0.08);
+  border-color: var(--nc-border-light);
+  transform: translateY(-2px);
+}
+
+.nc-badge-artesanal {
+  background-color: var(--nc-primary-bg);
+  color: var(--nc-primary);
+  border: 1px solid var(--nc-border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.nc-badge-gold {
+  background-color: var(--nc-gold-bg);
+  color: var(--nc-gold);
+  border: 1px solid rgba(192, 125, 51, 0.2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.nc-badge-emerald {
+  background-color: var(--nc-emerald-bg);
+  color: var(--nc-emerald);
+  border: 1px solid rgba(30, 91, 79, 0.2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   Formularios e Inputs Amigables y Accesibles
+   -------------------------------------------------------------------------- */
+.form-control, .form-select {
+  border: 1.5px solid var(--nc-border);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.95rem;
+  color: var(--nc-text-primary);
+  background-color: #ffffff;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--nc-primary);
+  box-shadow: 0 0 0 0.2rem rgba(153, 68, 34, 0.18);
+}
+
+.ng-invalid.ng-touched:not(form) {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.18);
+}
+.ng-valid.ng-touched:not(form) {
+  border-color: var(--nc-emerald);
+  box-shadow: 0 0 0 0.2rem rgba(30, 91, 79, 0.18);
+}
+
+/* --------------------------------------------------------------------------
+   Accesibilidad & Lectura en Voz
+   -------------------------------------------------------------------------- */
+.floating-tts-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1050;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  border-radius: 2rem;
+  padding: 0.6rem 1.2rem;
+}
+
+/* --------------------------------------------------------------------------
+   Animaciones y Scroll
+   -------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}

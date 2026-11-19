@@ -31,7 +31,7 @@ public class CrearPedidoUseCase {
                 request.compradorId(),
                 request.articuloId(),
                 request.cantidad(),
-                articulo.getPrecio(),
+                request.precioUnitario(),
                 LocalDateTime.now()
         );
 

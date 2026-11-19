@@ -32,7 +32,4 @@ public class CodigoOtpEntity {
 
     @Column(nullable = false)
     private LocalDateTime fechaCreacion;
-
-    @Column(nullable = false)
-    private int intentosFallidos = 0;
 }

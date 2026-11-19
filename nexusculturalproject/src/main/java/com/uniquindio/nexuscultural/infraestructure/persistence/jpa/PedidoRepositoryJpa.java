@@ -9,7 +9,6 @@ import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.entity.Pedid
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.DevolucionPersistenceMapper;
 import com.uniquindio.nexuscultural.infraestructure.persistence.jpa.mapper.PedidoPersistenceMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Primary
 @Repository
 @RequiredArgsConstructor
 public class PedidoRepositoryJpa implements PedidoRepository {
@@ -59,43 +57,8 @@ public class PedidoRepositoryJpa implements PedidoRepository {
     }
 
     @Override
-    public List<Pedido> buscarPorCompradorId(UUID compradorId) {
-        return dataRepository.findByCompradorIdOrderByFechaCreacionDesc(compradorId)
-                .stream()
-                .map(this::aDominio)
-                .toList();
-    }
-
-    @Override
     public List<Pedido> obtenerPorCompradorId(UUID compradorId) {
-        return buscarPorCompradorId(compradorId);
-    }
-
-    @Override
-    public List<Pedido> buscarPorArtesanoId(UUID artesanoId) {
-        return dataRepository.findByArtesanoId(artesanoId)
-                .stream()
-                .map(this::aDominio)
-                .toList();
-    }
-
-    @Override
-    public List<Pedido> listarDevoluciones() {
-        return dataRepository.findPedidosConDevolucion()
-                .stream()
-                .map(this::aDominio)
-                .toList();
-    }
-
-    @Override
-    public Optional<Pedido> buscarPorReferenciaTransaccion(String referenciaTransaccion) {
-        return dataRepository.findByReferenciaTransaccion(referenciaTransaccion)
-                .map(this::aDominio);
-    }
-
-    @Override
-    public List<Pedido> listarTodos() {
-        return dataRepository.findAll()
+        return dataRepository.findByCompradorIdOrderByFechaCreacionDesc(compradorId)
                 .stream()
                 .map(this::aDominio)
                 .toList();
@@ -113,4 +76,7 @@ public class PedidoRepositoryJpa implements PedidoRepository {
                 .orElse(null);
         return pedidoMapper.toDomain(entity, devolucion);
     }
+
+
+
 }

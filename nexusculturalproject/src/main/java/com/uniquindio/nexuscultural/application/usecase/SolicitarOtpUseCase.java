@@ -20,21 +20,14 @@ public class SolicitarOtpUseCase {
     }
 
     public MensajeRespuestaResponse ejecutar(SolicitarOtpRequest request) {
-        // Reiniciar contador de intentos previos
-        ValidarOtpUseCase.reiniciarIntentos(request.email());
-
-        // Se asigna un valor entero que representa los minutos de validez (5 minutos)
+        // Se asigna un valor entero que representa los minutos de validez
         CodigoOtp nuevoOtp = CodigoOtp.generar(5);
 
-        // Se guarda asociado al email
+        // Se guarda asociado al email en PostgreSQL
         otpRepository.guardar(request.email(), nuevoOtp);
 
-        // Se notifica al correo
-        try {
-            firebaseNotificadorAdapter.enviarCorreoOtp(request.email(), nuevoOtp.codigo());
-        } catch (Exception e) {
-            System.err.println("Error enviando correo OTP: " + e.getMessage());
-        }
+        // Se inserta en la colección "mail" de Firestore para activar Trigger Email
+        firebaseNotificadorAdapter.enviarCorreoOtp(request.email(), nuevoOtp.codigo());
 
         System.out.println("📩 [OTP GENERADO]: El código para " + request.email() + " es: " + nuevoOtp.codigo());
 

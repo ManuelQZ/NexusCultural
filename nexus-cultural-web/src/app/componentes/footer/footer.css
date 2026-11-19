@@ -1,0 +1,27 @@
+.nc-footer {
+  background-color: var(--nc-primary-dark);
+  color: #d1c7bd;
+  border-top: 3px solid var(--nc-gold);
+}
+
+.footer-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.text-gold {
+  color: var(--nc-gold-bright) !important;
+}
+
+.footer-link {
+  color: #d1c7bd;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--nc-gold-bright);
+  padding-left: 4px;
+}
+

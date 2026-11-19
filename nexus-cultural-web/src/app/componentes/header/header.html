@@ -1,0 +1,95 @@
+@if (isLoggedIn()) {
+  <header class="sticky-top">
+    <!-- Barra superior informativa cultural -->
+    <div class="top-bar py-1 px-3 text-white">
+      <div class="container d-flex justify-content-between align-items-center small">
+        <div>
+          <i class="fa-solid fa-seedling me-1 text-gold"></i>
+          <span>Nexus Cultural • Ecosistema Digital de Comercio Ancestral</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-gold text-dark text-uppercase">{{ rol() || 'USUARIO' }}</span>
+          <span class="text-white-50">|</span>
+          <span class="small">{{ usuario() || 'Mi Sesión' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navbar Principal Adaptado al Rol -->
+    <nav class="navbar navbar-expand-lg nc-navbar py-2 shadow-sm">
+      <div class="container">
+        <!-- Logo y Branding -->
+        <a [routerLink]="authService.obtenerRutaPorRol()" class="navbar-brand d-flex align-items-center gap-2">
+          <img src="assets/images/logo.png" alt="Logo" class="nc-logo img-fluid" />
+          <div class="d-flex flex-column">
+            <span class="brand-title font-serif fw-bold">Nexus Cultural</span>
+            <span class="brand-subtitle text-muted">{{ rol() }}</span>
+          </div>
+        </a>
+
+        <!-- Botón Hamburguesa Responsive -->
+        <button class="navbar-toggler border-0" type="button"
+                data-bs-toggle="collapse" data-bs-target="#nexusNav"
+                aria-controls="nexusNav" aria-expanded="false" aria-label="Menú">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Enlaces Condicionales según el Rol -->
+        <div class="collapse navbar-collapse" id="nexusNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-lg-1">
+            <!-- NAVEGACIÓN PARA ARTESANOS -->
+            @if (authService.isArtisan()) {
+              <li class="nav-item">
+                <a routerLink="/artesano" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+                  <i class="fa-solid fa-palette me-1 text-terracota"></i>Mi Taller Artesanal
+                </a>
+              </li>
+            }
+
+            <!-- NAVEGACIÓN PARA ADMINISTRADORES -->
+            @if (authService.isAdmin()) {
+              <li class="nav-item">
+                <a routerLink="/admin" routerLinkActive="active" class="nav-link">
+                  <i class="fa-solid fa-shield-halved me-1 text-terracota"></i>Panel de Administración
+                </a>
+              </li>
+            }
+
+            <!-- NAVEGACIÓN PARA COMPRADORES -->
+            @if (authService.isBuyer()) {
+              <li class="nav-item">
+                <a routerLink="/catalogo" routerLinkActive="active" class="nav-link">
+                  <i class="fa-solid fa-shapes me-1"></i>Explorar Catálogo
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/carrito" routerLinkActive="active" class="nav-link position-relative">
+                  <i class="fa-solid fa-cart-shopping me-1"></i>Mi Carrito
+                  @if (carritoService.cantidadTotal() > 0) {
+                    <span class="badge rounded-pill bg-danger ms-1">{{ carritoService.cantidadTotal() }}</span>
+                  }
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/pedidos" routerLinkActive="active" class="nav-link">
+                  <i class="fa-solid fa-box-open me-1"></i>Mis Compras
+                </a>
+              </li>
+            }
+          </ul>
+
+          <!-- Botón de Cerrar Sesión -->
+          <div class="d-flex align-items-center gap-3">
+            <div class="text-end d-none d-md-block">
+              <div class="small fw-bold text-dark lh-1">{{ usuario() }}</div>
+              <small class="text-muted text-uppercase" style="font-size: 0.68rem;">{{ rol() }}</small>
+            </div>
+            <button class="btn btn-outline-danger btn-sm px-3" (click)="cerrarSesion()">
+              <i class="fa-solid fa-right-from-bracket me-1"></i>Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+}

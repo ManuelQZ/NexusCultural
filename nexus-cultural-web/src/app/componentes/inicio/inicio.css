@@ -1,0 +1,25 @@
+.welcome-container {
+  background: radial-gradient(circle at center, #faf7f2 0%, #f3ede4 100%);
+}
+
+.welcome-logo {
+  max-width: 130px;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(153, 68, 34, 0.15));
+}
+
+.text-terracota {
+  color: var(--nc-primary) !important;
+}
+
+.text-gold {
+  color: var(--nc-gold) !important;
+}
+
+.text-emerald {
+  color: var(--nc-emerald) !important;
+}
+
+.letter-spacing-2 {
+  letter-spacing: 0.12em;
+}

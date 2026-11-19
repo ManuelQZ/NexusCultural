@@ -29,35 +29,6 @@ public class PedidoRepositoryEnMemoria implements PedidoRepository {
     }
 
     @Override
-    public List<Pedido> buscarPorCompradorId(UUID compradorId) {
-        return obtenerPorCompradorId(compradorId);
-    }
-
-    @Override
-    public List<Pedido> buscarPorArtesanoId(UUID artesanoId) {
-        return new ArrayList<>(pedidos.values());
-    }
-
-    @Override
-    public List<Pedido> listarDevoluciones() {
-        return pedidos.values().stream()
-                .filter(p -> p.getDevolucion() != null)
-                .toList();
-    }
-
-    @Override
-    public Optional<Pedido> buscarPorReferenciaTransaccion(String referenciaTransaccion) {
-        return pedidos.values().stream()
-                .filter(p -> Objects.equals(p.getReferenciaTransaccion(), referenciaTransaccion))
-                .findFirst();
-    }
-
-    @Override
-    public List<Pedido> listarTodos() {
-        return new ArrayList<>(pedidos.values());
-    }
-
-    @Override
     public boolean existePedidoEntregado(UUID compradorId, UUID articuloId) {
         return pedidos.values().stream()
                 .anyMatch(p -> p.getCompradorId().equals(compradorId)

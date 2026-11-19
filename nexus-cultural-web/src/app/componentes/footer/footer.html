@@ -1,0 +1,80 @@
+@if (isLoggedIn()) {
+<footer class="nc-footer mt-5 pt-5 pb-3">
+  <div class="container">
+    <div class="row g-4 pb-4 border-bottom border-secondary border-opacity-25">
+      <!-- Columna 1: Branding y Propósito -->
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <img src="assets/images/logo.png" alt="Nexus Cultural" class="footer-logo img-fluid bg-white p-1 rounded-circle" />
+          <div>
+            <h5 class="font-serif text-white mb-0">Nexus Cultural</h5>
+            <small class="text-gold">Comercio Ancestral Colombiano</small>
+          </div>
+        </div>
+        <p class="text-muted small pe-lg-3">
+          Plataforma tecnológica de comercio justo dedicada a conectar maestros artesanos de comunidades indígenas y tradicionales con compradores de todo el mundo, garantizando la autenticidad de cada pieza.
+        </p>
+        <div class="d-flex gap-3 text-gold fs-5">
+          <a href="#" class="text-gold text-decoration-none" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#" class="text-gold text-decoration-none" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="text-gold text-decoration-none" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="#" class="text-gold text-decoration-none" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+
+      <!-- Columna 2: Navegación de Catálogo -->
+      <div class="col-lg-2 col-md-6 col-6">
+        <h6 class="text-white fw-bold mb-3 font-serif">Explorar</h6>
+        <ul class="list-unstyled small d-flex flex-column gap-2">
+          <li><a routerLink="/catalogo" class="footer-link">Catálogo Completo</a></li>
+          <li><a routerLink="/catalogo" class="footer-link">Cerámica Ancestral</a></li>
+          <li><a routerLink="/catalogo" class="footer-link">Tejeduría Wayuu</a></li>
+          <li><a routerLink="/catalogo" class="footer-link">Orfebrería y Filigrana</a></li>
+          <li><a routerLink="/exploracion-cultural" class="footer-link">Historias de Vida</a></li>
+        </ul>
+      </div>
+
+      <!-- Columna 3: Para Artesanos -->
+      <div class="col-lg-3 col-md-6 col-6">
+        <h6 class="text-white fw-bold mb-3 font-serif">Comunidad Artesanal</h6>
+        <ul class="list-unstyled small d-flex flex-column gap-2">
+          <li><a routerLink="/artesano" class="footer-link">Panel del Maestro Artesano</a></li>
+          <li><a routerLink="/catalogo" class="footer-link">Sello de Autenticidad</a></li>
+          <li><a href="#" class="footer-link">Comercio Justo y Pagos Seguros</a></li>
+          <li><a href="#" class="footer-link">Guía de Envíos Nacionales</a></li>
+        </ul>
+      </div>
+
+      <!-- Columna 4: Garantías y Seguridad -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="text-white fw-bold mb-3 font-serif">Seguridad y Respaldo</h6>
+        <div class="card bg-dark bg-opacity-50 border-secondary border-opacity-25 p-3 rounded-3 text-muted small">
+          <div class="d-flex align-items-center gap-2 mb-2 text-white">
+            <i class="fa-solid fa-lock text-gold"></i>
+            <span class="fw-semibold">Pagos con Wompi Bancolombia</span>
+          </div>
+          <p class="mb-2" style="font-size: 0.78rem;">
+            Todas las transacciones están cifradas con HTTPS y protegidas por AWS CloudFront.
+          </p>
+          <div class="d-flex align-items-center gap-2 text-white">
+            <i class="fa-solid fa-award text-gold"></i>
+            <span style="font-size: 0.78rem;">Garantía de Origen y Devolución</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie de página final -->
+    <div class="row pt-3 align-items-center small text-muted">
+      <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+        © {{ year }} Nexus Cultural S.A.S. • Universidad del Quindío • Todos los derechos reservados.
+      </div>
+      <div class="col-md-6 text-center text-md-end">
+        <span class="me-3">Ley 1581 de 2012 (Habeas Data)</span>
+        <a href="#" class="text-muted text-decoration-none">Términos y Condiciones</a>
+      </div>
+    </div>
+  </div>
+</footer>
+}
+

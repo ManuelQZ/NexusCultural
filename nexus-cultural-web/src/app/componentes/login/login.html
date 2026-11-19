@@ -1,0 +1,121 @@
+<div class="login-wrapper min-vh-100 d-flex align-items-center justify-content-center py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card nc-card shadow-lg border-0">
+          <div class="card-header bg-terracota text-white text-center py-4">
+            <a routerLink="/" class="text-decoration-none text-white d-inline-block mb-2">
+              <img src="assets/images/logo.png" alt="Logo" class="login-logo mb-2 bg-white p-1 rounded-circle" />
+              <h4 class="font-serif fw-bold mb-0">Nexus Cultural</h4>
+            </a>
+            <p class="text-gold small mb-0 fw-semibold">Iniciar Sesión • Acceso Seguro</p>
+          </div>
+
+          <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+              <h5 class="fw-bold font-serif mb-1">
+                <i class="fa-solid fa-key text-terracota me-2"></i>Autenticación OTP
+              </h5>
+              <p class="text-muted small mb-0">
+                @if (paso() === 1) {
+                  Ingresa tu correo para recibir un código de acceso temporal.
+                } @else {
+                  Ingresa el código numérico de 6 dígitos enviado a tu correo.
+                }
+              </p>
+            </div>
+
+            @if (mensaje()) {
+              <div class="alert text-center py-2 small"
+                   [class.alert-success]="!esError()"
+                   [class.alert-danger]="esError()">
+                <i class="fa-solid me-1"
+                   [class.fa-circle-check]="!esError()"
+                   [class.fa-triangle-exclamation]="esError()"></i>
+                {{ mensaje() }}
+              </div>
+            }
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <!-- Paso 1: Campo de Correo -->
+              <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">
+                  <i class="fa-solid fa-envelope me-1 text-terracota"></i>Correo Electrónico
+                </label>
+                <input type="email"
+                       formControlName="email"
+                       class="form-control py-2"
+                       [readonly]="paso() === 2"
+                       placeholder="correo@ejemplo.com" />
+                @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                  <div class="text-danger small mt-1">Ingresa un correo electrónico válido.</div>
+                }
+              </div>
+
+              <!-- Paso 2: Código OTP -->
+              @if (paso() === 2) {
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label small fw-semibold text-secondary mb-0">
+                      <i class="fa-solid fa-shield-halved me-1 text-gold"></i>Código OTP de 6 Dígitos
+                    </label>
+                    <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 small" (click)="irAPaso(1)">
+                      Cambiar correo
+                    </button>
+                  </div>
+                  <input type="text"
+                         formControlName="codigo"
+                         maxlength="6"
+                         class="form-control form-control-lg text-center fw-bold letter-spacing-code text-terracota"
+                         placeholder="••••••" />
+                  @if (loginForm.get('codigo')?.invalid && loginForm.get('codigo')?.touched) {
+                    <div class="text-danger small mt-1">El código debe tener 6 dígitos numéricos.</div>
+                  }
+                </div>
+              }
+
+              <!-- Botones de Acción -->
+              <div class="d-grid gap-2 mt-4">
+                @if (paso() === 1) {
+                  <button type="submit"
+                          class="btn btn-nc-primary py-3 fs-6"
+                          [disabled]="!canSolicitar()">
+                    @if (isLoading()) {
+                      <span class="spinner-border spinner-border-sm me-2"></span>Enviando código...
+                    } @else {
+                      <i class="fa-solid fa-paper-plane me-2"></i>Solicitar Código OTP
+                    }
+                  </button>
+                } @else {
+                  <button type="submit"
+                          class="btn btn-nc-primary py-3 fs-6"
+                          [disabled]="!canVerificar()">
+                    @if (isLoading()) {
+                      <span class="spinner-border spinner-border-sm me-2"></span>Verificando código...
+                    } @else {
+                      <i class="fa-solid fa-right-to-bracket me-2"></i>Ingresar al Sistema
+                    }
+                  </button>
+
+                  <div class="text-center mt-2">
+                    <button type="button"
+                            class="btn btn-link btn-sm text-muted text-decoration-none"
+                            (click)="solicitarCodigo()"
+                            [disabled]="isLoading()">
+                      <i class="fa-solid fa-rotate-right me-1"></i>¿No llegó el código? Reenviar
+                    </button>
+                  </div>
+                }
+              </div>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-top small text-muted">
+              ¿Aún no tienes cuenta? 
+              <a routerLink="/registro" class="text-terracota fw-bold text-decoration-none ms-1">Regístrate aquí</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
